@@ -3,64 +3,70 @@
 namespace App\Livewire\Komando;
 
 use App\Models\Insiden;
-use App\Models\LogInsiden;
+use App\Repositories\PetugasInsidenRepository;
 use Livewire\Component;
 
 class Map extends Component
 {
-    public $petugasInsidenData = [];
+    public $insiden;
+    public $insiden_id;
+
     public $latitude;
     public $longitude;
 
-    protected $listeners = ['refreshMap' => 'refreshData'];
+    public $petugasInsidenData = [];
+
+    protected PetugasInsidenRepository $petugasInsidenRepository;
+
+    public function boot(PetugasInsidenRepository $petugasInsidenRepository)
+    {
+        $this->petugasInsidenRepository = $petugasInsidenRepository;
+    }
 
     public function mount()
     {
-        $this->refreshData();
+        $this->insiden = Insiden::where('status', false)->first();
+
+        if ($this->insiden) {
+            $this->insiden_id = $this->insiden->id;
+            $this->latitude = $this->insiden->latitude;
+            $this->longitude = $this->insiden->longitude;
+
+            $this->loadPetugasInsidenData();
+        } else {
+            // Fallback lokasi default jika tidak ada insiden aktif
+            $this->latitude = -0.0263;   // Contoh: koordinat Pontianak
+            $this->longitude = 109.3425;
+            $this->petugasInsidenData = [];
+        }
     }
 
+    public function loadPetugasInsidenData()
+    {
+        if ($this->insiden_id) {
+            $this->petugasInsidenData = $this->petugasInsidenRepository
+                ->trackPetugasInsidenByInsiden($this->insiden_id);
+        }
+    }
+
+    // Method ini akan dipanggil secara otomatis oleh wire:poll
+    public function render()
+    {
+        $this->loadPetugasInsidenData();
+        return view('livewire.komando.map');
+    }
+
+    // Method untuk refresh data secara manual
     public function refreshData()
     {
-        $this->petugasInsidenData = $this->getData();
-        $insiden = Insiden::where('status', false)->first();
-        $this->latitude = $insiden->latitude ?? -1.8179; // Default to payload latitude
-        $this->longitude = $insiden->longitude ?? 110.5235; // Default to payload longitude
+        $this->loadPetugasInsidenData();
         $this->dispatch('petugasDataUpdated', $this->petugasInsidenData);
     }
 
-    public function getData()
+    // Method untuk update data petugas saja tanpa reload seluruh komponen
+    public function updatePetugasData()
     {
-        $logs = LogInsiden::with(['petugasInsiden.petugas', 'insiden'])
-            ->latest('created_at')
-            ->whereHas('insiden', fn($q) => $q->where('status', false))
-            ->get()
-            ->groupBy(function ($log) {
-                return $log->petugasInsiden->petugas->id ?? null;
-            })
-            ->map(fn($logs) => $logs->first())
-            ->filter(fn($log) => $log !== null);
-
-        $data = [];
-        foreach ($logs as $log) {
-            if ($log->latitude && $log->longitude && $log->petugasInsiden && $log->petugasInsiden->petugas) {
-                $data[] = [
-                    'latitude' => $log->latitude,
-                    'longitude' => $log->longitude,
-                    'nama_petugas' => $log->petugasInsiden->petugas->nama ?? 'Petugas',
-                    'foto' => $log->petugasInsiden->petugas->foto ?? null,
-                    'no_seri' => $log->petugasInsiden->perangkat->no_seri ?? '-',
-                    'suhu' => $log->suhu ?? '-',
-                    'kualitas_udara' => $log->kualitas_udara ?? '-',
-                    'status_text' => $log->status ? 'Aktif' : 'Tidak Aktif',
-                    'status_color' => $log->status ? 'text-green-500' : 'text-red-500',
-                ];
-            }
-        }
-        return $data;
-    }
-
-    public function render()
-    {
-        return view('livewire.komando.map');
+        $this->loadPetugasInsidenData();
+        $this->dispatch('petugasDataUpdated', $this->petugasInsidenData);
     }
 }

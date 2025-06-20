@@ -82,7 +82,7 @@
             </div>
         </div>
         <div class="card-body">
-        <livewire:komando.map wire:poll.5s />
+        <livewire:komando.map wire:poll.2s />
 
         </div>
     </div>

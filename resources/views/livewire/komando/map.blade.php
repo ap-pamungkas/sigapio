@@ -1,5 +1,6 @@
 @push('styles')
-    <link rel="stylesheet" href="{{ url('public/leaflet/leaflet.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
     <style>
         /* Custom styles for Leaflet pop-up */
         .leaflet-popup-content-wrapper {
@@ -49,85 +50,86 @@
         .leaflet-popup-content .text-yellow-500 {
             color: #ffe680 !important;
         }
-
-        .leaflet-tooltip.distance-label {
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 12px;
-            border: none;
-        }
+        ..leaflet-tooltip-distance {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid #fff;
+}
     </style>
 @endpush
 
-<div wire:ignore>
-    <div id="map" wire:ignore style="height:500px; width:100%;"></div>
-@push('scripts')
-@once
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    let map = L.map('map', {
-        center: [{{ $latitude }}, {{ $longitude }}],
-        zoom: 10
-    });
+<div>
 
-    const openStreet = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution: '© OpenStreetMap contributors'
-    });
 
-    const darkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 18,
-        attribution: '© OpenStreetMap, © CartoDB'
-    });
+    <div wire:ignore.self id="map" style="height: 80vh; border-radius: 12px;"></div>
 
-    darkLayer.addTo(map);
+    @push('scripts')
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    const baseLayers = {
-        "🗺️ OpenStreet": openStreet,
-        "🌙 Dark Mode": darkLayer
-    };
+        <script>
+            let map;
+            let markers = [];
+            let isMapInitialized = false;
+            let lines = [];
 
-    L.control.layers(baseLayers).addTo(map);
+            function initMap() {
+                if (!map) {
+                    map = L.map('map').setView([{{ $latitude }}, {{ $longitude }}], 15);
 
-    const markers = [];
-    const komandoLatLng = [{{ $latitude }}, {{ $longitude }}];
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                        maxZoom: 18,
+                        attribution: '© OpenStreetMap, © CartoDB'
+                    }).addTo(map);
 
-    const komandoIcon = L.icon({
-        iconUrl: '{{ url("public/komando/icon/zona.svg") }}',
-        iconSize: [46, 46],
-        iconAnchor: [23, 46],
-        popupAnchor: [0, -46]
-    });
 
-    const komandoMarker = L.marker(komandoLatLng, { icon: komandoIcon })
-        .addTo(map)
-        .bindPopup("📍 <strong>Pusat Komando</strong>");
+                    console.log(L.tileLayer('{{ url('public/tiles/Mapnik/{z}/{x}/{y}.png') }}'));
 
-    markers.push(komandoMarker);
-    window.petugasLines = [];
+                    // Add a marker at the setView location
+                    const pontianakIcon = L.icon({
+                        iconUrl: '{{ url('public/komando/icon/zona.svg') }}', // Replace with your desired icon URL
+                        iconSize: [46, 46],
+                        iconAnchor: [16, 32],
+                        popupAnchor: [0, -32]
+                    });
 
-    function updateMarkers(data) {
-        markers.slice(1).forEach(marker => map.removeLayer(marker));
-        markers.length = 1;
+                    L.marker([{{ $latitude }}, {{ $longitude }}], {
+                            icon: pontianakIcon
+                        })
+                        .addTo(map)
+                        .bindPopup("Pusat komando"); // Popup content
 
-        window.petugasLines.forEach(item => {
-            map.removeLayer(item.line);
-            map.removeLayer(item.label);
-        });
-        window.petugasLines = [];
+                    isMapInitialized = true;
+                }
+            }
 
-        data.forEach(p => {
-            if (!p.latitude || !p.longitude) return;
+            function updateMarkers(petugasData) {
+    if (!isMapInitialized) return;
 
-            const petugasLatLng = [p.latitude, p.longitude];
+    // Hapus marker & garis lama
+    markers.forEach(marker => map.removeLayer(marker));
+    markers = [];
+
+    lines.forEach(line => map.removeLayer(line));
+    lines = [];
+
+    const komandoLat = {{ $latitude }};
+    const komandoLng = {{ $longitude }};
+    const komandoLatLng = L.latLng(komandoLat, komandoLng);
+
+    petugasData.forEach(p => {
+        const lat = parseFloat(p.latitude);
+        const lng = parseFloat(p.longitude);
+
+        if (!isNaN(lat) && !isNaN(lng)) {
+            const petugasLatLng = L.latLng(lat, lng);
 
             const petugasIcon = L.divIcon({
-                html: `<div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden;">
+                html: `<div class="rounded-full border-2 border-white shadow-lg overflow-hidden" style="width: 40px; height: 40px;">
                     <img src="${p.foto ? `/storage/${p.foto}` : '{{ url('public/komando/assets/img/user/petugas.jpg') }}'}"
-                        style="width: 100%; height: 100%; object-fit: cover;">
+                    style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                 </div>`,
                 iconSize: [40, 40],
                 iconAnchor: [20, 40],
@@ -135,57 +137,90 @@ document.addEventListener('DOMContentLoaded', function () {
                 className: ''
             });
 
-            const distance = map.distance(komandoLatLng, petugasLatLng).toFixed(1);
-
             const popupContent = `
-                <strong>${p.nama_petugas}</strong><br>
-                Suhu: ${p.suhu}°C<br>
-                Kualitas Udara: ${p.kualitas_udara}<br>
-                Jarak ke Pusat Komando: ${distance} meter<br>
-                Status: <span class="${p.status_color}">${p.status_text}</span>
+                <div class="font-sans text-sm p-2">
+                    <div class="flex items-center mb-2">
+                        <img src="${p.foto ? `/storage/${p.foto}` : '{{ url('public/komando/assets/img/user/petugas.jpg') }}'}"
+                            alt="Foto Petugas"
+                            width="90%"
+                            class=" text-theme py-2 px-2  shadow-md" style="border-radius: 50%;">
+                        <div>
+                            <hr>
+                            <strong class="block text-base">${p.nama_petugas}</strong>
+                            <span>No Seri: ${p.no_seri}</span>
+                        </div>
+                    </div>
+                    <hr class="my-2">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <span>Suhu:</span> ${p.suhu}&deg;C
+                        </div>
+                        <div>
+                            <span>Kualitas Udara:</span> ${p.kualitas_udara}
+                        </div>
+                        <div class="col-span-2">
+                            <span>Status:</span>
+                            <span class="${p.status_color || ''} font-bold">${p.status_text}</span>
+                        </div>
+                    </div>
+                </div>
             `;
 
             const marker = L.marker(petugasLatLng, { icon: petugasIcon })
                 .addTo(map)
                 .bindPopup(popupContent);
-
             markers.push(marker);
 
-            // Tambahkan garis
+            // Garis dari komando ke petugas
             const line = L.polyline([komandoLatLng, petugasLatLng], {
-                color: 'red',
-                weight: 2,
-                dashArray: '4,6'
+                color: 'yellow',
+                weight: 3,
+                opacity: 0.9,
+                dashArray: '', // Solid line
             }).addTo(map);
 
-            // Hitung posisi tengah garis
-            const midLat = (komandoLatLng[0] + petugasLatLng[0]) / 2;
-            const midLng = (komandoLatLng[1] + petugasLatLng[1]) / 2;
+            // Hitung jarak (dalam meter) dan tampilkan sebagai tooltip di tengah garis
+            const distance = komandoLatLng.distanceTo(petugasLatLng); // dalam meter
+            const midpointLat = (komandoLat + lat) / 2;
+            const midpointLng = (komandoLng + lng) / 2;
 
-            const label = L.tooltip({
+            const tooltip = L.tooltip({
                 permanent: true,
                 direction: 'center',
-                className: 'distance-label',
-                offset: [0, 0]
+                className: 'leaflet-tooltip-distance',
+                offset: [0, 0],
             })
-            .setContent(`${distance} meter`)
-            .setLatLng([midLat, midLng])
-            .addTo(map);
+                .setLatLng([midpointLat, midpointLng])
+                .setContent(`${(distance / 1000).toFixed(2)} km`)
+                .addTo(map);
 
-            window.petugasLines.push({ line, label });
-        });
-    }
-
-    updateMarkers(@json($petugasInsidenData));
-
-    Livewire.on('petugasDataUpdated', (data) => {
-        updateMarkers(data);
+            lines.push(line);
+            lines.push(tooltip); // agar bisa dihapus nanti juga
+        }
     });
-});
-</script>
+}
 
 
-@endonce
-@endpush
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(() => {
+                    initMap();
+                    updateMarkers(@json($petugasInsidenData));
+                }, 1000);
 
+                Livewire.on('petugasDataUpdated', (data) => {
+                    updateMarkers(data);
+                });
+            });
+
+            window.addEventListener('livewire:load', function() {
+                setInterval(() => {
+                    @this.call('refreshData');
+                }, 5000);
+
+                @this.on('refreshMap', () => {
+                    updateMarkers(@json($petugasInsidenData));
+                });
+            });
+        </script>
+    @endpush
 </div>
