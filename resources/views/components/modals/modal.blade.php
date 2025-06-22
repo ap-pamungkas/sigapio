@@ -13,7 +13,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" wire:click="close" class="btn btn-secondary"
-                        data-bs-dismiss="modal">Close</button>
+                        data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-primary" wire:loading.attr="disabled" wire:target="simpan">
 
                         <span wire:loading.remove wire:target="simpan">

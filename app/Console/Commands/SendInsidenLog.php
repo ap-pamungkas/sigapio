@@ -47,6 +47,7 @@ class SendInsidenLog extends Command
                 'longitude' => $longitude,
                 'suhu' => $suhu,
                 'kualitas_udara' => $kualitasUdara,
+                'darurat' => false,
             ];
 
             try {

@@ -10,7 +10,7 @@
 
     <div class="row mb-4">
         <!-- Petugas Card -->
-        <div class="col-md-3 col-sm-6 mb-3">
+        <div class="col-md-4 col-sm-6 mb-3">
             <div class="card border-primary">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
@@ -31,7 +31,7 @@
         </div>
 
         <!-- Perangkat Card -->
-        <div class="col-md-3 col-sm-6 mb-3">
+        <div class="col-md-4 col-sm-6 mb-3">
             <div class="card border-success">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
@@ -52,7 +52,7 @@
         </div>
 
         <!-- Insiden Card -->
-        <div class="col-md-3 col-sm-6 mb-3">
+        <div class="col-md-4 col-sm-6 mb-3">
             <div class="card border-warning">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
@@ -75,7 +75,7 @@
 
     <div class="row">
         <!-- Recent Incidents -->
-        <div class="col-md-6 mb-4">
+        <div class="col-md-12 mb-4">
             <div class="card">
                 <div class="card-header bg-primary text-white">
                     <h5 class="card-title mb-0">Insiden Terbaru</h5>
@@ -123,43 +123,7 @@
             </div>
         </div>
 
-        <!-- Recent Logs -->
-        <div class="col-md-6 mb-4">
-            <div class="card">
-                <div class="card-header bg-info text-white">
-                    <h5 class="card-title mb-0">Aktivitas Terbaru</h5>
-                </div>
-                <div class="card-body">
-                    <div class="timeline">
-                        @forelse($recentLogs as $log)
-                            <div class="timeline-item">
-                                <div class="timeline-item-marker">
-                                    <div class="timeline-item-marker-indicator bg-info"></div>
-                                </div>
-                                <div class="timeline-item-content">
-                                    <div class="d-flex justify-content-between">
-                                        <strong>{{ $log->petugasInsiden->petugas->nama }}</strong>
-                                        <small class="text-muted">{{ $log->created_at->diffForHumans() }}</small>
-                                    </div>
-                                    <p class="mb-1">{{ $log->insiden->nama_insiden }}</p>
-                                    @if($log->suhu)
-                                        <span class="badge bg-danger me-1">Suhu: {{ $log->suhu }}°C</span>
-                                    @endif
-                                    @if($log->kualitas_udara)
-                                        <span class="badge bg-warning">Udara: {{ $log->kualitas_udara }}</span>
-                                    @endif
-                                </div>
-                            </div>
-                        @empty
-                            <p class="text-center">Tidak ada aktivitas terbaru</p>
-                        @endforelse
-                    </div>
-                    {{-- <div class="text-end mt-2">
-                        <a href="{{ route('admin.logs.index') }}" class="btn btn-sm btn-info">Lihat Semua</a>
-                    </div> --}}
-                </div>
-            </div>
-        </div>
+       
     </div>
 
     <!-- Log Chart Visualization -->

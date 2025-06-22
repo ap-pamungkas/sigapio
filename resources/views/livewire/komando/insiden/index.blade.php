@@ -57,7 +57,7 @@
                                    <a class="btn btn-primary btn-secondary"
                                    href="{{ route('komando.registrasi-petugas', $insiden->id) }}">
                                    <i class="bi bi-info-circle"></i>
-                                   Lihat Petugas
+                                  Tugaskan
                                     </td>
 
                                     @endif

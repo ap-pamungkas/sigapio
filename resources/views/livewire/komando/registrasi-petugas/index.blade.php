@@ -9,10 +9,10 @@
                     <div class="col-md-6 ">
                         <div class="float-end">
                             <a href="{{ route('komando.insiden.tracking-petugas', $insiden->id) }}" class="btn btn-success mx-2">
-                                <strong>TRACKING PETUGAS</strong>
+                                <strong>PANTAU PETUGAS</strong>
                             </a>
                             <button class="btn btn-success mx-2"  data-bs-toggle="modal" data-bs-target="#modalSelesai">
-                                <strong>Selesaikan Tugas</strong>
+                                <strong>SELESAIKAN TUGAS</strong>
                             </button>
                         </div>
                     </div>
