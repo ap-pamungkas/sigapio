@@ -20,6 +20,7 @@ class InsidenLogController extends Controller
             'longitude' => 'nullable|numeric',
             'suhu' => 'nullable|numeric',
             'kualitas_udara' => 'nullable|numeric',
+            'darurat' => 'nullable|boolean',
         ]);
 
         $perangkat = Perangkat::where('no_seri', $request->no_seri)->first();
@@ -51,6 +52,7 @@ class InsidenLogController extends Controller
             'longitude' => $request->longitude ?? null,
             'suhu' => $request->suhu,
             'kualitas_udara' => $request->kualitas_udara,
+            'darurat' => $request->darurat,
         ];
 
         $insidenLog = LogInsiden::create($logData);

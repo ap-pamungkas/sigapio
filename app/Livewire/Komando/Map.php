@@ -15,6 +15,9 @@ class Map extends Component
     public $longitude;
 
     public $petugasInsidenData = [];
+    
+    // Property ini penting untuk tracking perubahan
+    public $lastUpdated;
 
     protected PetugasInsidenRepository $petugasInsidenRepository;
 
@@ -39,34 +42,42 @@ class Map extends Component
             $this->longitude = 109.3425;
             $this->petugasInsidenData = [];
         }
+        
+        $this->lastUpdated = now()->timestamp;
     }
 
     public function loadPetugasInsidenData()
     {
         if ($this->insiden_id) {
-            $this->petugasInsidenData = $this->petugasInsidenRepository
+            $newData = $this->petugasInsidenRepository
                 ->trackPetugasInsidenByInsiden($this->insiden_id);
+            
+            // Cek apakah data benar-benar berubah
+            if ($this->petugasInsidenData !== $newData) {
+                $this->petugasInsidenData = $newData;
+                $this->lastUpdated = now()->timestamp;
+                
+                // Dispatch event ke JavaScript
+                $this->dispatch('petugasDataUpdated', [
+                    'data' => $this->petugasInsidenData,
+                    'timestamp' => $this->lastUpdated
+                ]);
+            }
         }
     }
 
-    // Method ini akan dipanggil secara otomatis oleh wire:poll
-    public function render()
-    {
-        $this->loadPetugasInsidenData();
-        return view('livewire.komando.map');
-    }
-
-    // Method untuk refresh data secara manual
+    // Method ini akan dipanggil oleh wire:poll
     public function refreshData()
     {
         $this->loadPetugasInsidenData();
-        $this->dispatch('petugasDataUpdated', $this->petugasInsidenData);
     }
 
-    // Method untuk update data petugas saja tanpa reload seluruh komponen
-    public function updatePetugasData()
+    public function render()
     {
+        // PENTING: Panggil loadPetugasInsidenData() di render
+        // agar setiap kali wire:poll trigger, data akan di-update
         $this->loadPetugasInsidenData();
-        $this->dispatch('petugasDataUpdated', $this->petugasInsidenData);
+        
+        return view('livewire.komando.map');
     }
 }

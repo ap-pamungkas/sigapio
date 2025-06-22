@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class LogInsiden extends Model
 {
+    use SoftDeletes;
     protected $table = 'log_insiden'; // Pastikan nama tabel sesuai dengan yang ada di database
     protected $fillable = [
         'insiden_id',
@@ -13,7 +15,8 @@ class LogInsiden extends Model
         'latitude',
         'longitude',
         'suhu', 
-        'kualitas_udara'
+        'kualitas_udara',
+        'darurat',
     ];
 
     public function insiden()

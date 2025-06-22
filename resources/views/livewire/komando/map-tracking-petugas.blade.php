@@ -52,51 +52,98 @@
     <div id="map" style="height: 80vh; border-radius: 12px;"></div>
 
     @push('scripts')
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-        <script>
-            let map;
-            let markers = [];
-            let isMapInitialized = false;
+    <script>
+        let map;
+        let markers = [];
+        let isMapInitialized = false;
+        let lines = [];
+        let currentPetugasData = [];
+        let lastUpdateTimestamp = 0;
 
-            function initMap() {
-                if (!map) {
-                    map = L.map('map').setView([{{ $latitude }}, {{ $longitude }}], 6);
-
-                     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 18,
-        attribution: '© OpenStreetMap, © CartoDB'
-    }).addTo(map);
-
-
-                    console.log(L.tileLayer('{{ url("public/tiles/Mapnik/{z}/{x}/{y}.png") }}') );
-
-                    // Add a marker at the setView location
-                    const pontianakIcon = L.icon({
-                        iconUrl: '{{ url("public/komando/icon/zona.svg") }}', // Replace with your desired icon URL
-                        iconSize: [46, 46],
-                        iconAnchor: [16, 32],
-                        popupAnchor: [0, -32]
-                    });
-
-                    L.marker([{{ $latitude }}, {{ $longitude }}], { icon: pontianakIcon })
-                        .addTo(map)
-                        .bindPopup("Pusat komando"); // Popup content
-
-                    isMapInitialized = true;
+        function updateStatusIndicator(status, message) {
+            const indicator = document.getElementById('status-indicator');
+            if (indicator) {
+                indicator.className = `status-indicator ${status}`;
+                indicator.textContent = message;
+                
+                if (status === 'updated') {
+                    setTimeout(() => {
+                        indicator.style.display = 'none';
+                    }, 2000);
+                } else {
+                    indicator.style.display = 'block';
                 }
             }
+        }
 
-            function updateMarkers(petugasData) {
-                if (!isMapInitialized) return;
+        function initMap() {
+            if (!map) {
+                console.log('Initializing map...');
+                map = L.map('map').setView([{{ $latitude }}, {{ $longitude }}], 15);
 
-                markers.forEach(marker => map.removeLayer(marker));
-                markers = [];
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 18,
+                    attribution: '© OpenStreetMap, © CartoDB'
+                }).addTo(map);
 
-                petugasData.forEach(p => {
+                // Add command center marker
+                const pontianakIcon = L.icon({
+                    iconUrl: '{{ url('public/komando/icon/zona.svg') }}', 
+                    iconSize: [46, 46],
+                    iconAnchor: [16, 32],
+                    popupAnchor: [0, -32]
+                });
+
+                L.marker([{{ $latitude }}, {{ $longitude }}], {
+                        icon: pontianakIcon
+                    })
+                    .addTo(map)
+                    .bindPopup("Pusat komando");
+
+                isMapInitialized = true;
+                updateStatusIndicator('updated', 'Peta berhasil dimuat');
+                
+                // Initial data load
+                setTimeout(() => {
+                    updateMarkers(@json($petugasInsidenData));
+                }, 500);
+            }
+        }
+
+        function updateMarkers(petugasData) {
+            if (!isMapInitialized) {
+                console.log('Map not initialized yet');
+                return;
+            }
+
+            console.log('Updating markers with data:', petugasData);
+            updateStatusIndicator('updating', 'Memperbarui posisi petugas...');
+
+            // Clear existing markers and lines
+            markers.forEach(marker => {
+                map.removeLayer(marker);
+            });
+            markers = [];
+
+            lines.forEach(line => {
+                map.removeLayer(line);
+            });
+            lines = [];
+
+            const komandoLat = {{ $latitude }};
+            const komandoLng = {{ $longitude }};
+            const komandoLatLng = L.latLng(komandoLat, komandoLng);
+
+            if (Array.isArray(petugasData) && petugasData.length > 0) {
+                petugasData.forEach((p, index) => {
                     const lat = parseFloat(p.latitude);
                     const lng = parseFloat(p.longitude);
+
                     if (!isNaN(lat) && !isNaN(lng)) {
+                        const petugasLatLng = L.latLng(lat, lng);
+
                         const petugasIcon = L.divIcon({
                             html: `<div class="rounded-full border-2 border-white shadow-lg overflow-hidden" style="width: 40px; height: 40px;">
                                 <img src="${p.foto ? `/storage/${p.foto}` : '{{ url('public/komando/assets/img/user/petugas.jpg') }}'}"
@@ -105,16 +152,17 @@
                             iconSize: [40, 40],
                             iconAnchor: [20, 40],
                             popupAnchor: [0, -40],
-                            className: ''
+                            className: `petugas-marker-${index}`
                         });
 
+                        const now = new Date();
                         const popupContent = `
                             <div class="font-sans text-sm p-2">
                                 <div class="flex items-center mb-2">
                                     <img src="${p.foto ? `/storage/${p.foto}` : '{{ url('public/komando/assets/img/user/petugas.jpg') }}'}"
                                         alt="Foto Petugas"
                                         width="90%"
-                                        class=" text-theme py-2 px-2  shadow-md" style="border-radius: 50%;">
+                                        class="text-theme py-2 px-2 shadow-md" style="border-radius: 50%;">
                                     <div>
                                         <hr>
                                         <strong class="block text-base">${p.nama_petugas}</strong>
@@ -124,49 +172,113 @@
                                 <hr class="my-2">
                                 <div class="grid grid-cols-2 gap-2">
                                     <div>
-                                        <span>Suhu:</span> ${p.suhu}&deg;C
+                                        <span>Suhu:</span> ${p.suhu || 'N/A'}&deg;C
                                     </div>
                                     <div>
-                                        <span>Kualitas Udara:</span> ${p.kualitas_udara}
+                                        <span>Kualitas Udara:</span> ${p.kualitas_udara || 'N/A'}
                                     </div>
                                     <div class="col-span-2">
                                         <span>Status:</span>
-                                        <span class="${p.status_color || ''} font-bold">${p.status_text}</span>
+                                        <span class="${p.status_color || ''} font-bold">${p.status_text || 'N/A'}</span>
+                                    </div>
+                                    <div class="col-span-2 text-xs text-gray-300">
+                                        <span>⏰ Diperbarui: ${now.toLocaleTimeString()}</span>
                                     </div>
                                 </div>
                             </div>
                         `;
 
-                        const marker = L.marker([lat, lng], {
-                                icon: petugasIcon
-                            })
+                        const marker = L.marker(petugasLatLng, { icon: petugasIcon })
                             .addTo(map)
                             .bindPopup(popupContent);
                         markers.push(marker);
+
+                        // Line from command center to petugas
+                        const line = L.polyline([komandoLatLng, petugasLatLng], {
+                            color: 'yellow',
+                            weight: 3,
+                            opacity: 0.9,
+                            dashArray: '',
+                        }).addTo(map);
+
+                        // Distance calculation and tooltip
+                        const distance = komandoLatLng.distanceTo(petugasLatLng);
+                        const midpointLat = (komandoLat + lat) / 2;
+                        const midpointLng = (komandoLng + lng) / 2;
+
+                        const tooltip = L.tooltip({
+                            permanent: true,
+                            direction: 'center',
+                            className: 'leaflet-tooltip-distance',
+                            offset: [0, 0],
+                        })
+                            .setLatLng([midpointLat, midpointLng])
+                            .setContent(`${(distance / 1000).toFixed(2)} km`)
+                            .addTo(map);
+
+                        lines.push(line);
+                        lines.push(tooltip);
                     }
                 });
+
+                updateStatusIndicator('updated', `${petugasData.length} petugas aktif - ${new Date().toLocaleTimeString()}`);
+            } else {
+                updateStatusIndicator('updated', 'Tidak ada petugas aktif');
             }
 
-            document.addEventListener('DOMContentLoaded', function() {
-                setTimeout(() => {
-                    initMap();
-                    updateMarkers(@json($petugasInsidenData));
-                }, 1000);
+            // Store current data
+            currentPetugasData = petugasData;
+        }
 
-                Livewire.on('petugasDataUpdated', (data) => {
-                    updateMarkers(data);
-                });
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing map...');
+            setTimeout(() => {
+                initMap();
+            }, 1000);
+        });
+
+        // Livewire event listeners
+        document.addEventListener('livewire:initialized', () => {
+            console.log('Livewire initialized');
+            
+            // Listen for data updates from Livewire
+            Livewire.on('petugasDataUpdated', (event) => {
+                console.log('Petugas data updated event received:', event);
+                
+                if (event && event.data) {
+                    updateMarkers(event.data);
+                } else if (Array.isArray(event)) {
+                    // Sometimes Livewire sends the array directly
+                    updateMarkers(event);
+                }
             });
+        });
 
-            window.addEventListener('livewire:load', function() {
-                setInterval(() => {
-                    @this.call('refreshData');
-                }, 5000);
+        // Listen for Livewire updates (when wire:poll triggers)
+        document.addEventListener('livewire:updated', function() {
+            console.log('Livewire component updated');
+            
+            // Force update markers with current data
+            const newData = @this.petugasInsidenData;
+            if (newData && Array.isArray(newData)) {
+                updateMarkers(newData);
+            }
+        });
 
-                @this.on('refreshMap', () => {
-                    updateMarkers(@json($petugasInsidenData));
-                });
-            });
-        </script>
-    @endpush
+        // Backup: Watch for changes in the Livewire component data
+        setInterval(() => {
+            if (window.Livewire && @this) {
+                const currentData = @this.petugasInsidenData;
+                const currentTimestamp = @this.lastUpdated;
+                
+                if (currentTimestamp > lastUpdateTimestamp) {
+                    console.log('Data changed detected via polling, updating markers...');
+                    updateMarkers(currentData);
+                    lastUpdateTimestamp = currentTimestamp;
+                }
+            }
+        }, 1000);
+    </script>
+@endpush
 </div>

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal('longitude', 11, 8)->nullable();
             $table->decimal('suhu', 8, 2)->nullable();
             $table->float('kualitas_udara')->nullable();
+            $table->boolean('darurat')->default(false);
             $table->softDeletes();
             $table->timestamps();
         });

@@ -34,6 +34,7 @@ class LogInsidenSeeder extends Seeder
                 'longitude' => $baseLng + $faker->randomFloat(6, -0.002, 0.002),
                 'suhu' => $faker->randomFloat(1, 27, 35),
                 'kualitas_udara' => $faker->randomFloat(1, 200, 500),
+                'darurat' => false // 20% kemungkinan darurat
             ]);
         }
     }
