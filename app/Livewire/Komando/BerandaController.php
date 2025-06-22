@@ -20,8 +20,6 @@ class BerandaController extends Component
     public $longitude;
     public $petugasInsidenData;
 
-    protected $listeners = ['refreshMap' => 'refreshData'];
-
     public function mount()
     {
         $this->insidenAktif = $this->getActiveIncidents();
@@ -35,7 +33,16 @@ class BerandaController extends Component
 
     public function refreshData()
     {
-        $this->dispatch('refreshMap');
+        // Refresh all data
+        $this->insidenAktif = $this->getActiveIncidents();
+        $this->logPetugas = $this->getLatestOfficerLogs();
+        $this->petugasInsidenData = $this->prepareOfficerMarkerData($this->logPetugas);
+        
+        // Pass the updated data to the Map component
+        $this->dispatch('refreshMapData', [
+            'petugasData' => $this->petugasInsidenData,
+            'timestamp' => now()->timestamp
+        ]);
     }
 
     private function getActiveIncidents()
@@ -56,7 +63,7 @@ class BerandaController extends Component
 
     private function getLatestOfficerLogs()
     {
-        return LogInsiden::with(['petugasInsiden.petugas', 'insiden'])
+        return LogInsiden::with(['petugasInsiden.petugas', 'petugasInsiden.perangkat', 'insiden'])
             ->latest('created_at')
             ->whereHas('insiden', function($query) {
                 $query->where('status', false);
@@ -76,29 +83,34 @@ class BerandaController extends Component
             ->first();
 
         return [
-            'latitude' => $activeInsiden->latitude ?? $lastInsiden->latitude ?? 0,
-            'longitude' => $activeInsiden->longitude ?? $lastInsiden->longitude ?? 0,
+            'latitude' => $activeInsiden->latitude ?? $lastInsiden->latitude ?? -0.0263,
+            'longitude' => $activeInsiden->longitude ?? $lastInsiden->longitude ?? 109.3425,
         ];
     }
 
     private function prepareOfficerMarkerData($logTerakhirPerPetugas)
     {
         $petugasInsidenData = [];
+        
         foreach ($logTerakhirPerPetugas as $log) {
-            if ($log->latitude && $log->longitude) {
+            // Add validation for required data
+            if ($log->latitude && $log->longitude && $log->petugasInsiden && $log->petugasInsiden->petugas) {
                 $petugasInsidenData[] = [
-                    'latitude' => $log->latitude,
-                    'longitude' => $log->longitude,
-                    'nama_petugas' => $log->petugasInsiden->petugas->nama ?? 'Petugas',
+                    'latitude' => (float) $log->latitude,
+                    'longitude' => (float) $log->longitude,
+                    'nama_petugas' => $log->petugasInsiden->petugas->nama ?? 'Petugas Tidak Diketahui',
                     'foto' => $log->petugasInsiden->petugas->foto ?? null,
-                    'no_seri' => $log->petugasInsiden->perangkat->no_seri ?? '-',
-                    'suhu' => $log->suhu ?? '-',
-                    'kualitas_udara' => $log->kualitas_udara ?? '-',
+                    'no_seri' => $log->petugasInsiden->perangkat->no_seri ?? 'N/A',
+                    'suhu' => $log->suhu ?? 'N/A',
+                    'kualitas_udara' => $log->kualitas_udara ?? 'N/A',
                     'status_text' => $log->status ? 'Aktif' : 'Tidak Aktif',
                     'status_color' => $log->status ? 'text-success' : 'text-danger',
+                    'petugas_insiden_id' => $log->petugas_insiden_id,
+                    'created_at' => $log->created_at->format('Y-m-d H:i:s')
                 ];
             }
         }
+        
         return $petugasInsidenData;
     }
 

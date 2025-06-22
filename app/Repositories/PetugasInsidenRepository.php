@@ -90,18 +90,28 @@ class PetugasInsidenRepository extends Repository
             ->get()
             ->map(function ($item) {
                 $latestLog = $item->insidenLog()->latest()->first();
+            
+                // Skip jika tidak ada log atau koordinatnya kosong
+                if (!$latestLog || !$latestLog->latitude || !$latestLog->longitude) {
+                    return null; // akan difilter di bawah
+                }
+            
                 return [
                     'nama_petugas' => $item->petugas->nama ?? 'Tidak Diketahui',
                     'foto' => $item->petugas->foto ?? null,
                     'no_seri' => $item->perangkat->no_seri ?? 'Tidak Diketahui',
-                    'suhu' => $latestLog ? $latestLog->suhu : '-',
-                    'kualitas_udara' => $latestLog ? $latestLog->kualitas_udara : '-',
+                    'suhu' => $latestLog->suhu ?? '-',
+                    'kualitas_udara' => $latestLog->kualitas_udara ?? '-',
                     'status' => $item->status ?? 'Aktif',
                     'status_text' => $item->status ?? 'Aktif',
                     'status_color' => $item->status === 'Tidak Aktif' ? 'text-danger' : 'text-success',
-                    'latitude' => $latestLog ? $latestLog->latitude : null,
-                    'longitude' => $latestLog ? $latestLog->longitude : null,
+                    'latitude' => $latestLog->latitude,
+                    'longitude' => $latestLog->longitude,
                 ];
-            })->all();;
+            })
+            ->filter() // 🧹 Hapus yang null
+            ->values() // 🔢 Reset index agar hasilnya array numerik
+            ->all();
+            
     }
 }
