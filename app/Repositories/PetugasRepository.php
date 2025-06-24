@@ -2,7 +2,6 @@
 
 namespace App\Repositories;
 use App\Models\Petugas;
-use App\Services\LogActivityService;
 use App\Traits\QueryHelper;
 use Illuminate\Support\Facades\Storage;
 
