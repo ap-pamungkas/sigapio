@@ -11,12 +11,10 @@ class InsidenRepository extends Repository
 {
     use QueryHelper;
 
-    protected $logActivityService;
-
-
+   
     public function __construct()
     {
-        $this->logActivityService = new LogActivityService;
+       parent::__construct();   
     }
 
     public function getInsiden(?string $search, int $perPage, ?string $sortField = null, ?string $sortDirection = null)

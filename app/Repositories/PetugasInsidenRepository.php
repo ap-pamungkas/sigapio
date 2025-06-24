@@ -11,11 +11,10 @@ use App\Services\LogActivityService;
 class PetugasInsidenRepository extends Repository
 {
 
-    protected $logActivityService;
-
+    
     public function __construct()
     {
-        $this->logActivityService =  new LogActivityService();
+       parent::__construct();   
     }
     public function getInsidenById($insidenId)
     {

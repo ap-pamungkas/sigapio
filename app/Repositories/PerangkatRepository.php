@@ -13,10 +13,10 @@ class PerangkatRepository extends Repository
     use QueryHelper;
 
 
-    protected $logActivityService;
+
     public function __construct()
     {
-        $this->logActivityService = new LogActivityService();
+       parent::__construct();   
     }
 
 

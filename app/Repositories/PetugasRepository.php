@@ -10,9 +10,10 @@ class PetugasRepository extends Repository  {
     use QueryHelper;
 
 
-    protected $logActivityService;
-    public function __construct(){
-        $this->logActivityService = new logActivityService();
+   
+    public function __construct()
+    {
+       parent::__construct();   
     }
 
     public function getPetugas($search, $perPage, $sortField = null, $sortDirection = null)

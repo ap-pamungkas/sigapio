@@ -12,12 +12,15 @@ class UserRepository extends Repository
 
     use QueryHelper;
 
-    protected $logActivityService;
+
+
+protected $sortField = 'created_at';
+protected $sortDirection = 'desc';
 
 
     public function __construct()
     {
-        $this->logActivityService = new LogActivityService;
+       parent::__construct();   
     }
 
     public function getusers(?string $search, int $perPage, ?string $sortField = null, ?string $sortDirection = null)
