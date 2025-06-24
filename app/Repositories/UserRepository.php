@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use App\Models\User;
 use App\Repositories\Repository;
-use App\Services\LogActivityService;
+
 use App\Traits\QueryHelper;
 
 class UserRepository extends Repository
@@ -12,10 +12,7 @@ class UserRepository extends Repository
 
     use QueryHelper;
 
-
-
-protected $sortField = 'created_at';
-protected $sortDirection = 'desc';
+ 
 
 
     public function __construct()

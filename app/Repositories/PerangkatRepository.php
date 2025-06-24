@@ -10,15 +10,11 @@ use Illuminate\Support\Facades\Storage;
 
 class PerangkatRepository extends Repository
 {
-    use QueryHelper;
-
-
 
     public function __construct()
     {
        parent::__construct();   
     }
-
 
     public function getDevices($search, $perPage, $sortField = null, $sortDirection = null, $condition = [])
     {
@@ -35,7 +31,7 @@ class PerangkatRepository extends Repository
             ->paginate($perPage);
     }
 
-    public function createDevice($data)
+    public function createDevice(array $data)
     {
         $devices = Perangkat::create($data);
         $this->logActivityService->logActivity(
@@ -51,7 +47,7 @@ class PerangkatRepository extends Repository
 
 
 
-    public function updateDevice($device_id, $data)
+    public function updateDevice($device_id, array $data)
     {
         $devices = Perangkat::find($device_id);
 
@@ -125,17 +121,5 @@ class PerangkatRepository extends Repository
         return $devices->delete();
     }
 
-    public function updateStatus($devicesId)
-    {
-        $devices = Perangkat::find($devicesId);
-
-        if (!$devices) {
-            return false;
-        }
-        // Toggle status between 'Aktif' and 'Tidak Aktif'
-        $devices->status = $devices->kondisi === 'Baik' ? 'Rusak' : 'Baik';
-        $devices->save();
-
-        return $devices; // Kembalikan objek Petugas setelah diperbarui
-    }
+  
 }
