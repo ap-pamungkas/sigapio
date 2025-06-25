@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Komando;
 
+use App\Livewire\Komando\RegistrasiPetugas\Datapetugas;
 use App\Livewire\Komando\RegistrasiPetugas\PetugasInsidenData;
 use App\Models\Insiden;
 use App\Models\Perangkat;
@@ -75,7 +76,7 @@ class RegistrasiPetugasController extends Component
 
     $this->petugasInsidenRepository->createPetugasInsiden($data);
    session()->flash('success', 'Petugas dan perangkat berhasil ditambahkan.');
-    $this->dispatch('refreshPetugasInsidenData')->to(PetugasInsidenData::class);
+    $this->dispatch('refreshPetugasInsidenData')->to(Datapetugas::class);
     $this->reset(['selectedDevice', 'selectedPetugas']);
 
 }

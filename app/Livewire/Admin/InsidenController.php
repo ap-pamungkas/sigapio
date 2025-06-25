@@ -11,38 +11,33 @@ use Livewire\WithPagination;
 class InsidenController extends Component
 {
 
-   use WithPagination, DispatchMessage;
+    use WithPagination, DispatchMessage;
     #[Title("Admin - Insiden")]
 
     protected $insidenRepository;
+    public  $selectedId;
+    public $search = '';
+    public $perPage = 10;
+    // public $sortField, $sortDirection ;
+    public $sortField = 'id';
+    public $sortDirection = 'asc';
+    public $paginationTheme = 'bootstrap';
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
+    }
 
     public function __construct()
     {
         $this->insidenRepository = new InsidenRepository();
     }
 
-
-
-public  $selectedId;
-public $search = '';
-
-public $perPage = 10;
-// public $sortField, $sortDirection ;
-
-public $sortField = 'id';
-public $sortDirection = 'asc';
-
-public $paginationTheme = 'bootstrap';
-
-public function sortBy($field)
-{
-    if ($this->sortField === $field) {
-        $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-        $this->sortField = $field;
-        $this->sortDirection = 'asc';
-    }
-}
     public function render()
     {
         $data['list_insiden'] = $this->insidenRepository->getInsiden(
@@ -52,7 +47,7 @@ public function sortBy($field)
             $this->sortDirection
         );
 
-       
+
         return view('livewire.admin.insiden.index', $data);
     }
 
@@ -60,7 +55,7 @@ public function sortBy($field)
     {
         $this->selectedId = $id;
     }
-    
+
     public function close()
     {
         $this->reset();

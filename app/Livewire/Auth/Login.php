@@ -11,11 +11,11 @@ use Livewire\Attributes\Layout;
 
 class Login extends Component
 {
-   protected $locActivityService;
+   protected $logActivityService;
 
 
    public function boot(){
-    $this->locActivityService = new LogActivityService;
+    $this->logActivityService = new LogActivityService;
    }
     public $username = '';
     public $password = '';
@@ -51,7 +51,7 @@ class Login extends Component
         $user = Auth::user();
 
         // Log successful login activity
-        $this->locActivityService->logActivity(
+        $this->logActivityService->logActivity(
             $user,
             'login_success',
             [
@@ -73,13 +73,13 @@ class Login extends Component
     public function logout()
     {
         // Initialize LogActivityService if not already initialized
-        if (!$this->locActivityService) {
-            $this->locActivityService = new LogActivityService();
+        if (!$this->logActivityService) {
+            $this->logActivityService = new LogActivityService();
         }
 
         $user = Auth::user();
         if ($user) {
-            $this->locActivityService->logActivity(
+            $this->logActivityService->logActivity(
                 $user,
                 'logout',
                 [

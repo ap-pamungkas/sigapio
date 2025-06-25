@@ -17,8 +17,8 @@ class InsidenController extends Component
     #[Layout("components.layouts.komando")]
 
     public $insiden_id;
-    public $nama_insiden;
-    public $keterangan;
+    public string $nama_insiden;
+    public string $keterangan;
     public $isEditMode = false;
     public  $selectedId;
     public $search = '';

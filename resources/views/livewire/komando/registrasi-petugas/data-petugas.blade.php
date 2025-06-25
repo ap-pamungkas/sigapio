@@ -6,7 +6,7 @@
                 <div class="row align-items-center g-4">
                     <div class="col-md-4 col-12 text-center d-flex flex-column align-items-center">
                         @if ($device['foto'])
-                            <img width="100" height="100" src="{{ $device['foto'] }}"
+                            <img width="100" height="100" src="{{ asset('public/storage/' . $device['foto']) }}"
                                 alt="Foto {{ $device['nama_petugas'] }}"
                                 class="rounded-circle border border-light shadow"
                                 style="object-fit: cover; aspect-ratio: 1/1;">

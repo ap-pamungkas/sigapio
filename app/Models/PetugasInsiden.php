@@ -13,7 +13,6 @@ class PetugasInsiden extends Model
         'perangkat_id',
         'status',
     ];
-
     protected $with = [
         'petugas',
         'insiden',

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\InsidenLog;
+
 use App\Models\LogInsiden;
 use App\Models\PetugasInsiden;
 use App\Models\Perangkat;
@@ -38,7 +38,11 @@ class InsidenLogController extends Controller
         $insiden = Insiden::find($petugasInsiden->insiden_id);
 
         // Cek jika latitude dan longitude belum diatur (data pertama)
-        if ($insiden && ($insiden->latitude === null || $insiden->longitude === null)) {
+        if ($insiden && 
+            ($insiden->latitude === null || $insiden->longitude === null) && 
+            $request->latitude !== '0' && 
+            $request->longitude !== '0'
+        ) {
             $insiden->update([
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,

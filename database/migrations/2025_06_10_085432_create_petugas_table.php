@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('petugas', function (Blueprint $table) {
            $table->id();
-            $table->string(column: 'nama');
+            $table->string( 'nama');
             $table->text('alamat')->nullable();
             $table->enum('status', allowed: ['Aktif', 'Tidak Aktif'])->default('Aktif');
             $table->enum('jenis_kelamin', allowed: ['Laki-laki', 'Perempuan']);

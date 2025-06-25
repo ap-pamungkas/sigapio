@@ -10,10 +10,8 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 class PerangkatController extends Component
-{
-
+{    
     use  WithPagination, DispatchMessage;
-
     public  $device_id;
     public int $selectedId;
     public string $no_seri;

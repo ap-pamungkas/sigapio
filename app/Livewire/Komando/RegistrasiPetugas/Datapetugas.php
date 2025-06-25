@@ -30,14 +30,13 @@ class Datapetugas extends Component
 
 
     public function hydrate()
-{
-    $this->loadPetugasInsidenData();
-}
+    {
+        $this->loadPetugasInsidenData();
+    }
 
     public function loadPetugasInsidenData()
     {
         $this->petugasInsidenData = $this->petugasInsidenRepository->getPetugasInsidenByInsiden($this->insidenId);
-
     }
 
     public function render()
