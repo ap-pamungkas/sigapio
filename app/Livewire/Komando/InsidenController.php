@@ -11,7 +11,6 @@ use Livewire\WithPagination;
 
 class InsidenController extends Component
 {
-
     use WithPagination, DispatchMessage;
     #[Title("Komando - Insiden")]
     #[Layout("components.layouts.komando")]
@@ -30,8 +29,6 @@ class InsidenController extends Component
     public $sortDirection = 'asc';
 
     public $paginationTheme = 'bootstrap';
-
-    
     protected $insidenRepository;
 
     public function __construct()
