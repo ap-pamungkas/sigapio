@@ -68,15 +68,19 @@ class UserRepository extends Repository
     public function deleteUser($id)
     {
         $user = User::find($id);
-        $user->delete();
-        $this->logActivityService->logActivity(
+         $this->logActivityService->logActivity(
             $user,
             'deleted',
             [
+                $user['id'] => $user->id,
                 $user['nama'] => $user->nama,
+                $user['username'] => $user->username,
+                
             ],
             'nama'
         );
+        $user->delete();
+       
     }
 
 

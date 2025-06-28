@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Livewire\Auth\Login;
-use Illuminate\Http\Request;
+
 
 class AuthController extends Controller
 {
@@ -13,7 +13,7 @@ class AuthController extends Controller
         $this->authLogout = new Login;
     }
    public function logout(){
-   $this->authLogout->logout(); 
-   return redirect()->route("login");
+   return $this->authLogout->logout(); 
+ 
    }
 }

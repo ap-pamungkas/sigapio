@@ -111,7 +111,7 @@ class PerangkatController extends Component
     public function deleteData($id)
     {
 
-        $this->perangkatRepository->deleteDevices($id);
+        $this->perangkatRepository->deleteDevice($id);
 
         $this->success('data berhasil di hapus');
         $this->js('

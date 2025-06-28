@@ -29,9 +29,14 @@ class Login extends Component
         'password' => 'required',
     ];
 
+    protected $messages = [
+        'username.required' => 'Username harus diisi.',
+        'password.required' => 'Password harus diisi.',
+    ];
+
     public function login()
     {
-        $this->validate($this->rules);
+        $this->validate($this->rules, $this->messages);
 
         // Coba autentikasi pengguna
         if (! Auth::attempt(['username' => $this->username, 'password' => $this->password], $this->remember)) {

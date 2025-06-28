@@ -100,7 +100,7 @@ class PetugasController extends Component
 
     public function deleteData($id){
         $this->petugasRepository->deletePetugas($id);
-        $this->success('data berhasil di hapus');
+        $this->success('data berhasil dihapus');
         $this->js('
             $(".modal").modal("hide")
         ');

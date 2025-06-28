@@ -58,7 +58,7 @@ public function sortBy($field)
         return view('livewire.admin.user.index', $data);
     }
 
-    public function saveData(){
+public function saveData(){
     $this->validate([
         'nama' => 'required',
         'username' => 'required|unique:users,username,' . $this->user_id,
@@ -119,7 +119,7 @@ public function sortBy($field)
         $this->resetPage();
         $this->js('
              $(".modal").modal("hide")');
-        $this->success('data berhasil di hapus');
+        $this->success('data berhasil dihapus');
     }
 
 }

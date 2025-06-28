@@ -80,7 +80,7 @@ class InsidenRepository extends Repository
     public function deleteInsiden($id)
     {
         $insiden = Insiden::find($id);
-        $insiden->delete();
+        
         $this->logActivityService->logActivity(
             $insiden,
             'deleted',
@@ -89,5 +89,6 @@ class InsidenRepository extends Repository
             ],
             'nama_insiden'
         );
+        $insiden->delete();
     }
 }

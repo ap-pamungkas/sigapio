@@ -80,10 +80,10 @@ class PerangkatRepository extends Repository
         }
 
 
-        $devices->kondisi = $this->conditions($devices->kondisi);
+        $devices->kondisi = $this->condition($devices->kondisi);
         $this->logActivityService->logActivity(
             $devices,
-            'update',
+            'updated',
             [
                 $devices->no_seri => $devices->no_seri,
             ],
@@ -94,7 +94,7 @@ class PerangkatRepository extends Repository
         return $devices;
     }
 
-    private function conditions($currentCondition)
+    private function condition($currentCondition)
     {
         // Toggle status between 'Aktif' and 'Tidak Aktif'
         $currentCondition = $currentCondition === 'Baik' ? 'Rusak' : 'Baik';
@@ -103,12 +103,9 @@ class PerangkatRepository extends Repository
     }
 
 
-    public function deleteDevices($id)
+    public function deleteDevice($id)
     {
         $devices = Perangkat::findOrFail($id);
-        if ($devices->qr_code && Storage::disk('public')->exists($devices->qr_code)) {
-            Storage::disk('public')->delete($devices->qr_code);
-        }
         $this->logActivityService->logActivity(
             $devices,
             'delete',
