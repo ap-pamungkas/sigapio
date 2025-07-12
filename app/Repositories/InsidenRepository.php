@@ -37,7 +37,7 @@ class InsidenRepository extends Repository
         $insiden = Insiden::create($data);
         $this->logActivityService->logActivity(
             $insiden,
-            'create',
+            'created',
             [
                 $insiden['nama_insiden'] => $insiden->nama_insiden,   
             ],

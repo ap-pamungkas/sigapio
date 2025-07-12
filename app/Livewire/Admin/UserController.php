@@ -65,6 +65,17 @@ public function saveData(){
         'email' => 'required|email|unique:users,email,' . $this->user_id,
         'role' => 'required',
         'password' => $this->user_id ? 'nullable|min:6' : 'required|min:6',
+    ],[
+        'nama.required' => 'Nama tidak boleh kosong',
+        'username.required' => 'Username tidak boleh',
+        'username.unique' => 'Username sudah digunakan',
+        'email.required' => 'Email tidak boleh kosong',
+        'email.email' => 'Format email tidak valid',
+        'email.unique' => 'Email sudah digunakan',
+        'role.required' => 'Role harus dipilih',
+        'password.required' => 'Password tidak boleh kosong',
+        'password.min' => 'Password minimal 6 karakter',
+        'password.confirmed' => 'Konfirmasi password tidak cocok',
     ]);
 
     $data = [
@@ -110,6 +121,7 @@ public function saveData(){
     public function close()
     {
         $this->reset();
+         $this->resetValidation();
     }
 
     public function deleteData($id)

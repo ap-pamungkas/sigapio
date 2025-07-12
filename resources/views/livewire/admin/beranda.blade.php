@@ -75,7 +75,7 @@
 
     <div class="row">
         <!-- Recent Incidents -->
-        <div class="col-md-12 mb-4">
+        <div class="col-md-6 mb-4">
             <div class="card">
                 <div class="card-header bg-primary text-white">
                     <h5 class="card-title mb-0">Insiden Terbaru</h5>
@@ -95,15 +95,14 @@
                                     <tr>
                                         <td>{{ $insiden->nama_insiden }}</td>
                                         <td>
-                                           @if($insiden->status === false)
-                                            <span class="badge bg-warning">Belum Selesai</span>
-                                           @else
-                                            <span class="badge bg-success"> Selesai</span>
-                                            
-                                           @endif
+                                            @if ($insiden->status === false)
+                                                <span class="badge bg-warning">Belum Selesai</span>
+                                            @else
+                                                <span class="badge bg-success"> Selesai</span>
+                                            @endif
                                         </td>
                                         <td>
-                                            @foreach($insiden->petugasInsiden as $assignment)
+                                            @foreach ($insiden->petugasInsiden as $assignment)
                                                 <span class="badge bg-primary">{{ $assignment->petugas->nama }}</span>
                                             @endforeach
                                         </td>
@@ -123,15 +122,10 @@
             </div>
         </div>
 
-       
-    </div>
-
-    <!-- Log Chart Visualization -->
-    <div class="row mt-4">
-        <div class="col-12">
+        <div class="col-sm-12 col-md-6">
             <div class="card">
                 <div class="card-header bg-info text-white">
-                    <h5 class="card-title mb-0">Grafik Aktivitas Log Terbaru</h5>
+                    <h5 class="card-title mb-0">Grafik Insiden</h5>
                 </div>
                 <div class="card-body">
                     <canvas id="logChart" style="height: 400px; width: 100%;"></canvas>
@@ -139,59 +133,131 @@
             </div>
         </div>
     </div>
+
+     {{-- <div class="row">
+                <h3>LOKASI INSIDEN</h3>
+                <div id="map" style="height: 400px; width: 100%;"></div>
+            </div> --}}
+
 </div>
 
-@push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const ctx = document.getElementById('logChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: @json($logChartData),
-                options: @json($chartOptions)
-            });
-        });
-    </script>
-@endpush
 
 @push('styles')
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
+        .leaflet-control-custom {
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+            font-family: Arial, sans-serif;
+        }
+
+        .leaflet-control-custom .toggle-btn {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .leaflet-control-custom .layer-list {
+            display: none;
+            flex-direction: column;
+            padding: 5px;
+        }
+
+        .leaflet-control-custom .layer-list.active {
+            display: flex;
+        }
+
+        .leaflet-control-custom .layer-item {
+            display: flex;
+            align-items: center;
+            padding: 5px 10px;
+            margin: 2px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .leaflet-control-custom .layer-item.active {
+            background: #e0e0e0;
+        }
+
+        .leaflet-control-custom .layer-item:hover {
+            background: #f4f4f4;
+        }
+
+        .leaflet-control-custom .icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
         .timeline {
             position: relative;
             padding-left: 20px;
         }
+
         .timeline-item {
             position: relative;
             padding-bottom: 1.5rem;
         }
+
         .timeline-item-marker {
             position: absolute;
             left: -6px;
             top: 0;
         }
+
         .timeline-item-marker-indicator {
             width: 12px;
             height: 12px;
             border-radius: 50%;
             border: 2px solid #fff;
         }
+
         .timeline-item-content {
             padding-left: 20px;
             position: relative;
             top: -3px;
         }
+
         @media (max-width: 576px) {
             .timeline {
                 padding-left: 15px;
             }
+
             .timeline-item-content {
                 padding-left: 15px;
             }
+
             .timeline-item-marker {
                 left: -5px;
             }
         }
     </style>
 @endpush
+
+@push('scripts')
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js">
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('logChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie', // Set chart type to bar
+                data: @json($logChartData),
+                options: @json($chartOptions)
+            });
+
+        });
+
+
+        </script>
+@endpush
+

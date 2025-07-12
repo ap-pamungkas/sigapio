@@ -90,17 +90,25 @@
             </div>
 
             <div class="col-md-4">
-                <x-forms.select model="jenis_kelamin" label="Jenis Kelamin" placeholder="Jenis Kelamin">
-                    <option value="">Pilih Jenis Kelamin</option>
-                    <option value="laki-laki">Laki-laki</option>
-                    <option value="Perempuan">Perempuan</option>
-                </x-forms.select>
+               <x-forms.select model="jenis_kelamin" label="Jenis Kelamin" placeholder="Jenis Kelamin">
+    <option value="">Pilih Jenis Kelamin</option>
+    <option value="Laki-laki" {{ $jenis_kelamin == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+    <option value="Perempuan" {{ $jenis_kelamin == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+</x-forms.select>
+
             </div>
             <div class="col-md-6">
                 <x-forms.input model="tgl_lahir" type="date" label="Tanggal Lahir" placeholder="Tanggal Lahir" />
             </div>
             <div class="col-md-6">
                 <x-forms.input model="foto" type="file" label="Foto" placeholder="Foto" />
+
+            @if ($petugas_id)
+                <div class="mt-2">
+                    <span>Foto Lama: <a href="{{ url('public/storage/' .$foto) }}" target="_blank">Lihat</a></span>
+                </div>
+
+            @endif
             </div>
             <div class="col-md-12">
                 <x-forms.text-area model="alamat" label="Alamat" placeholder="Alamat" />

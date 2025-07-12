@@ -15,9 +15,9 @@ class InsidenController extends Component
     #[Title("Komando - Insiden")]
     #[Layout("components.layouts.komando")]
 
-    public $insiden_id;
-    public string $nama_insiden;
-    public string $keterangan;
+    public $insiden_id = '';
+    public string $nama_insiden = '';
+    public string $keterangan = '';
     public $isEditMode = false;
     public  $selectedId;
     public $search = '';
@@ -80,29 +80,29 @@ class InsidenController extends Component
             'nama_insiden' => $this->nama_insiden,
             'keterangan' => $this->keterangan,
         ];
-        switch ($this->insiden_id) {
-            case null:
-                $this->insidenRepository->createInsiden($data);
-                $this->success('data berhasil di simpan');
-                $this->resetToCreate();
-                break;
-            default:
-                $this->insidenRepository->updateInsiden($this->insiden_id, $data);
+        $this->validate([
+            'nama_insiden' => 'required|string|max:255',
+            'keterangan' => 'nullable|string|max:500',
+
+        ],
+    [
+            'nama_insiden.required' => 'Nama insiden harus diisi',
+            'nama_insiden.string' => 'Nama insiden harus berupa teks',
+            'nama_insiden.max' => 'Nama insiden tidak boleh lebih dari 255 karakter',
+            'keterangan.string' => 'Keterangan harus berupa teks',
+            'keterangan.max' => 'Keterangan tidak boleh lebih dari 500 karakter',
+    ]);
+
+                $this->insidenRepository->createInsiden( $data);
                 $this->success('data berhasil di perbarui');
-                break;
-        }
         $this->resetForm();
         $this->resetPage();
         $this->js('
-            $(".modal").modal("hide")   
+            $(".modal").modal("hide")
         ');
     }
 
-    public function resetToCreate()
-    {
-        $this->isEditMode = false;
-        $this->reset(['nama_insiden', 'keterangan']);
-    }
+
 
     public function deleteData($id)
     {
@@ -120,6 +120,6 @@ class InsidenController extends Component
         $this->nama_insiden = '';
         $this->keterangan = '';
 
-        // Note that we don't reset $this->jabatans
+
     }
 }

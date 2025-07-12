@@ -43,13 +43,9 @@ class Login extends Component
             // Log failed login attempt
 
             // Jika autentikasi gagal, lempar exception validasi
-            throw ValidationException::withMessages([
-                'username' => __('auth.failed'), // Menggunakan pesan error default Laravel
-            ]);
-        }
-
-        // Regenerasi session ID untuk keamanan
-        session()->flash('success', 'Welcome back! You have successfully logged in.');
+           session()->flash('error', 'login gagal! Periksa username dan password Anda.');
+        }else{
+             session()->flash('success', ' login berhasil, Selamat datang kembali!.');
         session()->regenerate();
 
         // Redirect pengguna berdasarkan role
@@ -64,7 +60,7 @@ class Login extends Component
                 'role' => $user->role,
                 'login_time' => now()->toDateTimeString(),
             ],
-            'username'
+            'error'
         );
 
         // Arahkan pengguna berdasarkan role
@@ -73,6 +69,10 @@ class Login extends Component
         } else {
             return redirect()->route('komando'); // Komando (default)
         }
+        }
+
+
+
     }
 
     public function logout()

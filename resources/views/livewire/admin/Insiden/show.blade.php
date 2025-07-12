@@ -155,7 +155,7 @@
                 }).addTo(map);
 
                 // Custom base layer control
-                var BaseLayerControl = L.Control.extend({
+                let BaseLayerControl = L.Control.extend({
                     options: { position: 'topright' },
                     onAdd: function (map) {
                         var container = L.DomUtil.create('div', 'leaflet-control-custom base-layer-control');

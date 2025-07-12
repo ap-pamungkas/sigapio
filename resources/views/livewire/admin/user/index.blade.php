@@ -7,7 +7,7 @@
                 <span>Tambah Data</span>
             </button>
             <div class="card-title">
-                <h2> DATA user</h2>
+                <h2> DATA USER</h2>
             </div>
         </div>
         <div class="card-body">
@@ -92,6 +92,11 @@
             </x-forms.select>
         </div>
         <x-forms.input type="password" model="password" label="Password" placeholder="Password" />
+        @if($user_id)
+            <span class="text-muted text-sm">Biarkan kosong jika tidak ingin mengganti password
+
+            </span>
+            @endif
 
 
         </div>

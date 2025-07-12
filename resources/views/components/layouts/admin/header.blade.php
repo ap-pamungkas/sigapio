@@ -26,7 +26,7 @@
         <li class="nav-item dropdown user-menu">
           <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
             <img
-              src="{{ url('admin') }}/dist/assets/img/user2-160x160.jpg"
+              src="{{ url('public/komando/assets/img/user/petugas.jpg') }}"
               class="user-image rounded-circle shadow"
               alt="User Image"
             />
@@ -36,7 +36,7 @@
             <!--begin::User Image-->
             <li class="user-header text-bg-secondary">
               <img
-                src="{{ url('admin') }}/dist/assets/img/user2-160x160.jpg"
+                src="{{ url('public/komando/assets/img/user/petugas.jpg') }}"
                 class="rounded-circle shadow"
                 alt="User Image"
               />
@@ -46,9 +46,9 @@
             </li>
 
             <!--begin::Menu Footer-->
-            <li class="user-body">
-              <a href="#" class="btn btn-default btn-flat">
-                <i class="fa fa-user"></i> <span>Profile</span></a>
+            <li class="user-body   ">
+              {{-- <a href="#" class="btn btn-default"> --}}
+                {{-- <i class="fa fa-user"></i> <span>Profile</span></a> --}}
                 <form method="POST" action="{{ route('logout') }}">
                   @csrf
                   <button type="submit" class="btn btn-default btn-flat float-end">

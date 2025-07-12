@@ -53,7 +53,11 @@ class RegistrasiPetugasController extends Component
     $this->validate([
         'selectedDevice' => 'required',
         'selectedPetugas' => 'required',
-    ]);
+    ],
+[
+        'selectedDevice.required' => 'Perangkat wajib dipilih.',
+        'selectedPetugas.required' => 'Petugas wajib dipilih.',
+]);
 
     // Cek apakah kombinasi perangkat sudah pernah ditambahkan untuk insiden ini
     $exists = PetugasInsiden::where('insiden_id', $this->insiden->id)
@@ -86,7 +90,7 @@ class RegistrasiPetugasController extends Component
 
 public function finalizeTask(){
     $this->insidenRepository->finalizeTaskInsiden($this->insiden->id);
-    session()->flash('success', 'Tugas selesai berhasil dilakukan.');
+    session()->flash('success', 'Tugas telah selesai dilakukan.');
     return redirect()->route('komando.insiden');
 }
 

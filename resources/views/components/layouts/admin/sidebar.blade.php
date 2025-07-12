@@ -35,11 +35,11 @@
                 <li class="nav-item">
 
                     <x-layouts.admin.sidebar.menu-items :url="'admin.insiden'" icon="fa-solid fa-circle-exclamation"
-                        class="nav-link" :active="request()->is('admin/insiden') || request()->is('admin/insiden/*')" label="Insiden" />
+                        class="nav-link" :active="request()->is('admin/insiden*') || request()->is('admin/insiden/*')" label="Insiden" />
                 </li>
                 <li class="nav-item">
                     <x-layouts.admin.sidebar.menu-items :url="'admin.petugas'" icon="fa-solid fa-user" class="nav-link"
-                        :active="request()->is('admin/petugas')" label="Petugas" />
+                        :active="request()->is('admin/petugas*')" label="Petugas" />
                 </li>
                 <li class="nav-item">
                     <x-layouts.admin.sidebar.menu-items :url="'admin.user'" icon="fa-solid fa-users" class="nav-link"

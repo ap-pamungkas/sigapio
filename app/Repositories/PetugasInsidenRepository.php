@@ -10,11 +10,9 @@ use App\Services\LogActivityService;
 
 class PetugasInsidenRepository extends Repository
 {
-
-    
     public function __construct()
     {
-       parent::__construct();   
+       parent::__construct();
     }
     public function getInsidenById($insidenId)
     {
@@ -89,12 +87,12 @@ class PetugasInsidenRepository extends Repository
             ->get()
             ->map(function ($item) {
                 $latestLog = $item->insidenLog()->latest()->first();
-            
+
                 // Skip jika tidak ada log atau koordinatnya kosong
                 if (!$latestLog || !$latestLog->latitude || !$latestLog->longitude) {
                     return null; // akan difilter di bawah
                 }
-            
+
                 return [
                     'nama_petugas' => $item->petugas->nama ?? 'Tidak Diketahui',
                     'foto' => $item->petugas->foto ?? null,
@@ -111,6 +109,6 @@ class PetugasInsidenRepository extends Repository
             ->filter() // 🧹 Hapus yang null
             ->values() // 🔢 Reset index agar hasilnya array numerik
             ->all();
-            
+
     }
 }

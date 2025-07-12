@@ -3,7 +3,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">Log Aktivitas</h5>
+                    <h1 class="card-title mb-0">LOG AKTIVITAS</h1>
                     <div class="d-flex gap-2">
                         <input type="text" class="form-control form-control-sm" placeholder="Cari deskripsi atau petugas..." wire:model.live.debounce.300ms="search" style="max-width: 200px;">
                         <select class="form-select form-select-sm" wire:model.live="logNameFilter" style="max-width: 150px;">

@@ -27,12 +27,15 @@ class BerandaController extends Component
     public $recentLogs;
     public $logChartData;
     public $chartOptions;
+
+
+    protected $petugasInsidenRepository;
     protected $limit = 5; // Configurable limit for recent data
 
     public function mount()
     {
         if (session()->has('success')) {
-            $this->success(session()->get('success'), 2000);
+            $this->success(session()->get('success'), 5000);
         }
 
         try {
@@ -90,80 +93,69 @@ class BerandaController extends Component
             ->get();
     }
 
-    private function prepareChartData()
-    {
-        // Group logs by petugas and time (hourly)
-        $logs = LogInsiden::selectRaw(
-            'petugas.nama as petugas_nama,
-             DATE_FORMAT(log_insiden.created_at, "%Y-%m-%d %H:00:00") as time,
-             COUNT(*) as count'
-        )
-        ->join('petugas_insiden', 'log_insiden.petugas_insiden_id', '=', 'petugas_insiden.id')
-        ->join('petugas', 'petugas_insiden.petugas_id', '=', 'petugas.id')
-        ->groupBy('petugas_nama', 'time')
-        ->orderBy('time')
-        ->limit(50) // Limit to prevent excessive data
+private function prepareChartData()
+{
+    // Group incidents by year and count occurrences
+    $incidents = Insiden::selectRaw('YEAR(created_at) as year, COUNT(*) as count')
+        ->whereNotNull('created_at') // Ensure no null timestamps
+        ->groupBy('year')
+        ->orderBy('year') // Sort by year ascending
         ->get();
 
-        $series = [];
-        $petugasNames = $logs->pluck('petugas_nama')->unique();
-        $times = $logs->pluck('time')->unique()->sort();
+    // Prepare labels and data for the chart
+    $labels = $incidents->pluck('year')->map(function ($year) {
+        return (string)$year; // Convert to string for categorical axis
+    })->toArray();
+    $data = $incidents->pluck('count')->toArray();
 
-        foreach ($petugasNames as $nama) {
-            $data = $times->map(function ($time) use ($logs, $nama) {
-                $log = $logs->where('petugas_nama', $nama)->where('time', $time)->first();
-                return $log ? $log->count : 0;
-            })->toArray();
+    // Generate a single color using getRandomColor
+    $color = $this->getRandomColor(); // Use one color for the line
 
-            $series[] = [
-                'label' => $nama,
+    // Set chart data
+    $this->logChartData = [
+        'labels' => $labels,
+        'datasets' => [
+            [
+                'label' => 'Jumlah Insiden',
                 'data' => $data,
-                'borderColor' => $this->getRandomColor(),
-                'fill' => false,
-            ];
-        }
+                'borderColor' => $color,
+                'backgroundColor' => $color, // Used for points in line chart
+                'fill' => false, // No fill for a standard line chart
+                'tension' => 0.4, // Slight curve for smoother lines
+            ],
+        ],
+    ];
 
-        $this->logChartData = [
-            'labels' => $times->toArray(),
-            'datasets' => $series,
-        ];
-
-        $this->chartOptions = [
-            'responsive' => true,
-            'maintainAspectRatio' => false,
-            'scales' => [
-                'x' => [
-                    'type' => 'time',
-                    'time' => [
-                        'unit' => 'hour',
-                        'displayFormats' => [
-                            'hour' => 'MMM d, HH:mm',
-                        ],
-                    ],
-                    'title' => [
-                        'display' => true,
-                        'text' => 'Waktu Aktivitas',
-                    ],
-                ],
-                'y' => [
-                    'beginAtZero' => true,
-                    'title' => [
-                        'display' => true,
-                        'text' => 'Jumlah Aktivitas',
-                    ],
+    // Set chart options
+    $this->chartOptions = [
+        'responsive' => true,
+        'maintainAspectRatio' => false,
+        'scales' => [
+            'x' => [
+                'title' => [
+                    'display' => true,
+                    'text' => 'Tahun',
                 ],
             ],
-            'plugins' => [
-                'legend' => [
-                    'position' => 'top',
-                ],
-                'tooltip' => [
-                    'mode' => 'index',
-                    'intersect' => false,
+            'y' => [
+                'beginAtZero' => true,
+                'title' => [
+                    'display' => true,
+                    'text' => 'Jumlah Insiden',
                 ],
             ],
-        ];
-    }
+        ],
+        'plugins' => [
+            'legend' => [
+                'position' => 'top',
+            ],
+            'tooltip' => [
+                'mode' => 'index',
+                'intersect' => false,
+            ],
+        ],
+    ];
+}
 
     private function getRandomColor()
     {
@@ -182,4 +174,9 @@ class BerandaController extends Component
     {
         return view('livewire.admin.beranda');
     }
+
+
+
+
+
 }

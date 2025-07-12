@@ -7,6 +7,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        
         body {
             background: linear-gradient(135deg, #ff4500 0%, #8b0000 50%, #2f1b14 100%);
             min-height: 100vh;
@@ -14,7 +15,6 @@
             position: relative;
             overflow-x: hidden;
         }
-
         body::before {
             content: '';
             position: absolute;

@@ -16,6 +16,8 @@ class Perangkat extends Model
     ];
 
 
+
+
     public function logPerangkat()
     {
         return $this->hasMany(PetugasInsiden::class, 'id_perangkat', 'id');

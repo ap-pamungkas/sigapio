@@ -20,11 +20,11 @@ class RoleMiddleware
 
         // Check if user has the required role
         if ($role === 'admin' && $user->role !== 1) {
-            return redirect()->route('komando')->with('error', 'Unauthorized access.');
+             abort(403, 'Unauthorized.');
         }
 
         if ($role === 'komando' && $user->role === 1) {
-            return redirect()->route('admin.beranda')->with('error', 'Admins cannot access this page.');
+            abort(403, 'Unauthorized.');
         }
 
         return $next($request);

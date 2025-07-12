@@ -19,6 +19,8 @@ class InsidenShowController extends Component
     {
         $this->insiden = $this->petugasInsidenRepository->getInsidenById($id);
         $this->logData = $this->petugasInsidenRepository->getLogByInsidenId($id);
+
+
     }
     public function render()
     {

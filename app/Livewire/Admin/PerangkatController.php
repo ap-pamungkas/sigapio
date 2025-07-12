@@ -10,11 +10,11 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 class PerangkatController extends Component
-{    
+{
     use  WithPagination, DispatchMessage;
-    public  $device_id;
-    public int $selectedId;
-    public string $no_seri;
+    public  $device_id ;
+    public int $selectedId ;
+    public string $no_seri = '';
     public $isEditMode = false;
 
 
@@ -60,9 +60,6 @@ class PerangkatController extends Component
         return view('livewire.admin.perangkat.index', $data);
     }
 
-
-
-
     public function saveData()
     {
         $data = [
@@ -81,7 +78,7 @@ class PerangkatController extends Component
                 $this->resetToCreate();
                 break;
             default:
-                $this->perangkatRepository->updateDevice($this->petugas_id, $data);
+                $this->perangkatRepository->updateDevice($this->device_id, $data);
                 $this->success('data berhasil di perbarui');
                 break;
         }
@@ -121,8 +118,6 @@ class PerangkatController extends Component
         $this->resetPage();
     }
 
-
-
     public function updateConditions($id)
     {
         $devices = $this->perangkatRepository->updateConditions($id);
@@ -133,19 +128,18 @@ class PerangkatController extends Component
         $this->success("Status perangkat berhasil diubah menjadi {$devices->kondisi}", 1700);
     }
 
-
-
-
-
     public function close()
     {
         $this->resetPage();
+        $this->resetForm();
+        $this->resetValidation();
         $this->reset(['search', 'perPage', 'sortField', 'sortDirection']);
     }
 
 
     public function resetForm()
     {
+        $this->device_id = null;
         $this->no_seri = '';
     }
 }

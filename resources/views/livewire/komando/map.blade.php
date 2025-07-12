@@ -135,7 +135,7 @@
                 const latitude = {{ $latitude ?? -0.0263 }};
                 const longitude = {{ $longitude ?? 109.3425 }};
 
-                map = L.map('map').setView([latitude, longitude], 15);
+            map = L.map('map').setView([latitude, longitude], 18);
 
                 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
                     maxZoom: 18,
@@ -236,13 +236,13 @@
 
 
                     // Get photo URL with fallback
-                    const photoUrl = p.foto 
+                    const photoUrl = p.foto
                         ? `{{ asset('public/storage') }}/${p.foto}`
                         : '{{ url('public/komando/assets/img/user/petugas.jpg') }}';
-                    
+
                     // Create custom marker with officer photo
                     const petugasIcon = L.divIcon({
-                        html: `<div class="rounded-full border-2 border-white shadow-lg overflow-hidden" style="width: 40px; height: 40px;">
+                        html: `<div class="rounded-full border-2 border-white shadow-lg overflow-hidden" style="width: 40px; height: 40px; z-index: 1000;">
                             <img src="${photoUrl}"
                             style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"
                             onerror="this.src='{{ url('public/komando/assets/img/user/petugas.jpg') }}';">
@@ -259,7 +259,7 @@
                         <div class="font-sans text-sm p-2 min-w-[200px]">
                             <div class="flex items-center mb-2">
                                 <img src="${photoUrl}"
-                                    alt="Foto Petugas" 
+                                    alt="Foto Petugas"
                                     class="rounded-circle border border-2 border-secondary me-3"
                                     style="width: 100%; height: 30%; object-fit: cover;"
                                     onerror="this.src='{{ url('public/komando/assets/img/user/petugas.jpg') }}';">

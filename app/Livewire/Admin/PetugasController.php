@@ -22,7 +22,7 @@ class PetugasController extends Component
     public $no_telepon;
     public $tgl_lahir;
     public $jenis_kelamin;
-    public $foto;
+    public  $foto;
 
     public $isEditMode = false;
     public $search = '';
@@ -55,6 +55,7 @@ class PetugasController extends Component
     public function close()
     {
         $this->reset();
+        $this->resetValidation();
     }
 
     public function saveData()
@@ -67,7 +68,7 @@ class PetugasController extends Component
             'jenis_kelamin' => $this->jenis_kelamin,
             'foto' => $this->foto
         ];
-        
+
         switch ($this->petugas_id) {
             case null:
                 $this->validate(Petugas::$rules, Petugas::$messages);
@@ -139,6 +140,7 @@ class PetugasController extends Component
         $this->alamat = $petugas->alamat;
         $this->tgl_lahir = $petugas->tgl_lahir;
         $this->jenis_kelamin = $petugas->jenis_kelamin;
+
         $this->foto = $petugas->foto;
     }
 }

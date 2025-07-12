@@ -7,7 +7,7 @@
             <span>Tambah Data</span>
         </button>
          <div class="card-title">
-           <h2> DATA JABATAN</h2>
+           <h2> DATA PERANGKAT</h2>
          </div>
       </div>
       <div class="card-body">
@@ -29,20 +29,25 @@
                             </tr>
                         </thead>
                         <tbody>
-                              @forelse ($list_devices as $index => $devices)
+                              @forelse ($list_devices as $index => $device)
                                 <tr>
                                     <td>{{ $index + 1 + ($list_devices->currentPage() - 1) * $list_devices->perPage() }}</td>
-                                    <td>{{ $devices->no_seri }}</td>
-                                    <td>{{ $devices->kondisi }}</td>
+                                    <td>{{ $device->no_seri }}</td>
+                                    <td>{{ $device->kondisi }}</td>
                                     <td>
                                         <button class="btn btn-secondary btn-sm"
-                                            wire:click="updateConditions('{{ $devices->id }}')" data-bs-toggle="modal"
+                                            wire:click="updateConditions('{{ $device->id }}')" data-bs-toggle="modal"
                                             >
                                             <i class="bi bi-pencil-square"></i> Ubah Kondisi
                                         </button>
+                                        <button class="btn btn-warning btn-sm"
+                                            wire:click="editData({{ $device->id }})" data-bs-toggle="modal"
+                                            data-bs-target="#tambah">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </button>
                                           <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
                                         data-bs-target="#hapusModal"
-                                        wire:click="confirmDelete({{ $devices->id }})">
+                                        wire:click="confirmDelete({{ $device->id }})">
                                         <i class="bi bi-trash"></i>
 
                                     </td>
