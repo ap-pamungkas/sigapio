@@ -5,7 +5,7 @@ namespace App\Livewire\Komando\RegistrasiPetugas;
 use App\Repositories\PetugasInsidenRepository;
 use Livewire\Component;
 
-class Datapetugas extends Component
+class DataPetugas extends Component
 {
     public $insidenId;
 

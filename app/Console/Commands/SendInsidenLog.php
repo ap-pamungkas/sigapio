@@ -27,7 +27,7 @@ class SendInsidenLog extends Command
     public function handle()
     {
         $deviceSerials = ['SN-PRK-001', 'SN-PRK-002', 'SN-PRK-004'];
-        $url = 'http://localhost/sigap-io_v_0.2/api/insiden-log';
+        $url = 'http://sigapio.kayongdeveloper.tech/api/insiden-log';
 
         $this->info("Mulai mengirim log insiden setiap 5 detik. Tekan Ctrl + C untuk berhenti.\n");
 
