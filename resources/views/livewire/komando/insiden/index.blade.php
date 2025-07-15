@@ -2,10 +2,10 @@
     <x-alerts.dispatch-message />
     <div  class="card card-outline card-secondary">
       <div class="card-header">
-        <button class="btn btn-success  float-end" data-bs-toggle="modal" data-bs-target="#tambah">
+        {{-- <button class="btn btn-success btn-sm float-end" data-bs-toggle="modal" data-bs-target="#tambah">
             <i class="bi bi-plus"></i>
-            <span>Tambah Insiden</span>
-        </button>
+            <span>Tambah Data</span>
+        </button> --}}
          <div class="card-title">
            <h2> DATA INSIDEN</h2>
          </div>
@@ -13,7 +13,7 @@
       <div class="card-body">
             <div class="row">
                 <div class="table-responsive">
-
+                  
                     <x-table.table searching>
                         <thead>
                             <tr>
@@ -35,32 +35,34 @@
                                     <td>{{ $index + 1 + (($list_insiden->currentPage() - 1) * $list_insiden->perPage()) }}</td>
                                     <td>{{ $insiden->nama_insiden }}</td>
                                     <td>{{ $insiden->keterangan }}</td>
-                                    <td>
-                                        @if($insiden->status == false)
+                                    <td>@if($insiden->status == false)
                                         <span class="badge bg-warning">Belum Selesai</span>
                                         @else
                                         <span class="badge bg-success"> Selesai</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                       @if($insiden->status == true)
-                                       <a class="btn btn-primary btn-sm"
-                                       href="{{ route('komando.insiden.show', $insiden->id) }}">
-                                       <i class="bi bi-info-circle"></i>
-                                   </a>
-                                       <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                                       data-bs-target="#hapusModal"
-                                       wire:click="confirmDelete({{ $insiden->id }})">
-                                       <i class="bi bi-trash"></i>
-                                   </button>
-                                   @else
-                                   <a class="btn btn-primary btn-secondary"
+                                        
+                                    @endif</td>
+                                      <td>
+                                    @if($insiden->status == false)
+                                         <a class="btn btn-primary btn-secondary"
                                    href="{{ route('komando.registrasi-petugas', $insiden->id) }}">
                                    <i class="bi bi-info-circle"></i>
                                   Tugaskan
-                                    </td>
-
+                                  
+                                    </a>
+                                    @else
+                                        <a class="btn btn-primary btn-sm"
+                                        href="{{ route('admin.insiden.show', $insiden->id) }}">
+                                        <i class="bi bi-info-circle"></i>
+                                    </a>
+                                      <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#hapusModal"
+                                        wire:click="confirmDelete({{ $insiden->id }})">
+                                        <i class="bi bi-trash"></i>
+                                         </button>
                                     @endif
+                                      
+                                   
+                                    </td>
                                 </tr>
                             @empty
                                 <tr class="text-center">
@@ -75,11 +77,7 @@
       </div>
     </div>
 
-    <x-modals.modal button="{{ $insiden_id ? 'Simpan Perubahan' : 'Simpan' }}" id="tambah" title="{{ $insiden_id ? 'Edit Data Insiden' : 'Tambah Data Insiden' }}" action="saveData">
-        <x-forms.input model="nama_insiden" label="Insiden" placeholder="Insiden" />
-        <x-forms.textarea model="keterangan" label="Keterangan" placeholder="Keterangan" />
-    </x-modals.modal>
-
+   
     {{-- modal delete data insiden --}}
      <x-modals.modalhapus id="hapusModal" click="deleteData({{ $selectedId }})" />
  </div>

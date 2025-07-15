@@ -50,7 +50,7 @@
             <a href="#" data-bs-toggle="dropdown" data-bs-display="static"
                 class="menu-link d-flex align-items-center">
                 <div class="menu-img online me-sm-2 ms-lg-0 ms-n2">
-                    <img src="{{ url('public/komando') }}/assets/img/user/profile.jpg" alt="Profile"
+                    <img src="{{ url('public/komando') }}/assets/img/user/petugas.jpg" alt="Profile"
                         class="" />
                 </div>
                 <div class="menu-text d-sm-block d-none">

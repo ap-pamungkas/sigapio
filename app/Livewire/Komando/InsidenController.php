@@ -122,4 +122,11 @@ class InsidenController extends Component
 
 
     }
+
+    public function tugaskan($insidenId)
+{
+
+    // Redirect to the route while preserving state
+    $this->redirect(route('komando.registrasi-petugas', $insidenId), navigate: true);
+}
 }
