@@ -4,12 +4,14 @@ namespace App\Livewire\Komando;
 
 use App\Models\Insiden;
 use App\Models\LogInsiden;
+use App\Traits\DispatchMessage;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
 class BerandaController extends Component
 {
+     use DispatchMessage;
     #[Title("Komando")]
     #[Layout("components.layouts.komando")]
 
@@ -22,6 +24,9 @@ class BerandaController extends Component
 
     public function mount()
     {
+         if (session()->has('success')) {
+            $this->success(session()->get('success'), 5000);
+        }
         $this->insidenAktif = $this->getActiveIncidents();
         $this->insidenSelesai = $this->getCompletedIncidents();
         $this->logPetugas = $this->getLatestOfficerLogs();

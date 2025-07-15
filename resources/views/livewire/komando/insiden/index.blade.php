@@ -1,11 +1,12 @@
+
 <div>
     <x-alerts.dispatch-message />
     <div  class="card card-outline card-secondary">
       <div class="card-header">
-        {{-- <button class="btn btn-success btn-sm float-end" data-bs-toggle="modal" data-bs-target="#tambah">
-            <i class="bi bi-plus"></i>
-            <span>Tambah Data</span>
-        </button> --}}
+     <button class="btn btn-success  float-end" data-bs-toggle="modal" data-bs-target="#tambah">
+    <i class="bi bi-plus"></i>
+    <span>Tambah Insiden</span>
+</button>
          <div class="card-title">
            <h2> DATA INSIDEN</h2>
          </div>
@@ -80,4 +81,14 @@
    
     {{-- modal delete data insiden --}}
      <x-modals.modalhapus id="hapusModal" click="deleteData({{ $selectedId }})" />
+
+       <x-modals.modal button="{{ $insiden_id ? 'Simpan Perubahan' : 'Simpan' }}" id="tambah" title="{{ $insiden_id ? 'Edit Data Insiden' : 'Tambah Data Insiden' }}" action="saveData">
+        <x-forms.input model="nama_insiden" label="Insiden" placeholder="Insiden" />
+        <x-forms.textarea model="keterangan" label="Keterangan" placeholder="Keterangan" />
+    </x-modals.modal>
  </div>
+
+
+
+ 
+  

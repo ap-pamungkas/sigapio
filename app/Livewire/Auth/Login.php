@@ -3,6 +3,7 @@
 namespace App\Livewire\Auth;
 
 use App\Services\LogActivityService;
+
 use App\Traits\DispatchMessage;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;

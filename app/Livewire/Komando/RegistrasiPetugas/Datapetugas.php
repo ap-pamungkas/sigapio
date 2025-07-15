@@ -26,6 +26,8 @@ class DataPetugas extends Component
         // Load petugas insiden data when the component is mounted
 
         $this->loadPetugasInsidenData();
+
+       
     }
 
 
@@ -41,6 +43,7 @@ class DataPetugas extends Component
 
     public function render()
     {
+       
         return view('livewire.komando.registrasi-petugas.data-petugas');
     }
 }
