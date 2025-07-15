@@ -53,7 +53,7 @@ class Map extends Component
 
         try {
             $newData = $this->petugasInsidenRepository->trackPetugasInsidenByInsiden($this->insiden_id);
-            
+     
             // Transform data to ensure consistent structure
             $transformedData = collect($newData)->map(function ($item) {
                 return [
@@ -66,9 +66,11 @@ class Map extends Component
                     'kualitas_udara' => $item['kualitas_udara'] ?? $item->kualitas_udara ?? 'N/A',
                     'status_text' => $item['status_text'] ?? $item->status_text ?? 'N/A',
                     'status_color' => $item['status_color'] ?? $item->status_color ?? 'text-secondary',
+                    'status_darurat' => $item['status_darurat'] ?? $item->status_darurat ?? 'N/A',
                 ];
             })->toArray();
 
+            // dd($transformedData);
             // Only update if data has actually changed
             if (json_encode($this->petugasInsidenData) !== json_encode($transformedData)) {
                 $this->petugasInsidenData = $transformedData;

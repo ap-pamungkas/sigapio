@@ -227,104 +227,122 @@
             if (validatedData.length > 0) {
                 console.log('👮 Processing', validatedData.length, 'valid petugas records');
 
-                validatedData.forEach((p, index) => {
-                    console.log(`👮 Petugas #${index + 1} - ${p.nama_petugas}:`, p.latitude, p.longitude);
+          validatedData.forEach((p, index) => {
+    console.log(`👮 Petugas #${index + 1} - ${p.nama_petugas}:`, p.latitude, p.longitude);
 
-                    const lat = parseFloat(p.latitude);
-                    const lng = parseFloat(p.longitude);
-                    const petugasLatLng = L.latLng(lat, lng);
+    const lat = parseFloat(p.latitude);
+    const lng = parseFloat(p.longitude);
+    const petugasLatLng = L.latLng(lat, lng);
 
+    // Get photo URL with fallback
+    const photoUrl = p.foto
+        ? `{{ asset('public/storage') }}/${p.foto}`
+        : '{{ url('public/komando/assets/img/user/petugas.jpg') }}';
 
-                    // Get photo URL with fallback
-                    const photoUrl = p.foto
-                        ? `{{ asset('public/storage') }}/${p.foto}`
-                        : '{{ url('public/komando/assets/img/user/petugas.jpg') }}';
+        // console.log(p.darurat);
+        
+    // Define blinking animation style for emergency cases
+    const blinkStyle = p.status_darurat == 1 
+        ? 'animation: blink 1s infinite;'
+        : '';
 
-                    // Create custom marker with officer photo
-                    const petugasIcon = L.divIcon({
-                        html: `<div class="rounded-full border-2 border-white shadow-lg overflow-hidden" style="width: 40px; height: 40px; z-index: 1000;">
-                            <img src="${photoUrl}"
-                            style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"
-                            onerror="this.src='{{ url('public/komando/assets/img/user/petugas.jpg') }}';">
-                        </div>`,
-                        iconSize: [40, 40],
-                        iconAnchor: [20, 40],
-                        popupAnchor: [0, -40],
-                        className: `petugas-marker-${index}`
-                    });
+    // Create custom marker with officer photo
+    const petugasIcon = L.divIcon({
+        html: `
+            <style>
+                @keyframes blink {
+                    0% { opacity: 1; }
+                    50% { opacity: 0.3; }
+                    100% { opacity: 1; }
+                }
+            </style>
+            <div class="rounded-full border-2 ${p.darurat == 1 ? 'border-red-500' : 'border-white'} shadow-lg overflow-hidden" style="width: 40px; height: 40px; z-index: 1000; ${blinkStyle}">
+                <img src="${photoUrl}"
+                    style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"
+                    onerror="this.src='{{ url('public/komando/assets/img/user/petugas.jpg') }}';">
+            </div>`,
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40],
+        className: `petugas-marker-${index}`
+    });
 
-                    // Create detailed popup content
-                    const now = new Date();
-                    const popupContent = `
-                        <div class="font-sans text-sm p-2 min-w-[200px]">
-                            <div class="flex items-center mb-2">
-                                <img src="${photoUrl}"
-                                    alt="Foto Petugas"
-                                    class="rounded-circle border border-2 border-secondary me-3"
-                                    style="width: 100%; height: 30%; object-fit: cover;"
-                                    onerror="this.src='{{ url('public/komando/assets/img/user/petugas.jpg') }}';">
-                                    <hr>
-                                <div class="flex-1">
-                                    <strong class="block text-base text-white">${p.nama_petugas}</strong>
-                                    <span class="text-xs text-white">Seri: ${p.no_seri}</span>
-                                </div>
-                            </div>
-                            <hr class="my-2 border-gray-200">
-                            <div class="grid grid-cols-2 gap-2 text-xs">
-                                <div class="flex justify-between">
-                                    <span class="text-white">Suhu:</span>
-                                    <span class="font-medium">${p.suhu || 'N/A'}&deg;C</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-white">Kualitas Udara:</span>
-                                    <span class="font-medium">${p.kualitas_udara || 'N/A'} ppm</span>
-                                </div>
-                                <div class="col-span-2 flex justify-between">
-                                    <span class="text-white">Status:</span>
-                                    <span class="${p.status_color || 'text-gray-500'} font-bold">${p.status_text || 'N/A'}</span>
-                                </div>
-                                <div class="col-span-2 text-xs text-gray-400 text-center mt-2">
-                                    <span>⏰ ${now.toLocaleTimeString('id-ID')}</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+    // Create detailed popup content
+    const now = new Date();
+    const popupContent = `
+        <div class="font-sans text-sm p-2 min-w-[200px]">
+            <div class="flex items-center mb-2">
+                <img src="${photoUrl}"
+                    alt="Foto Petugas"
+                    class="rounded-circle border border-2 border-secondary me-3"
+                    style="width: 100%; height: 30%; object-fit: cover;"
+                    onerror="this.src='{{ url('public/komando/assets/img/user/petugas.jpg') }}';">
+                <hr>
+                <div class="flex-1">
+                    <strong class="block text-base text-white">${p.nama_petugas}</strong>
+                    <span class="text-xs text-white">Seri: ${p.no_seri}</span>
+                </div>
+            </div>
+            <hr class="my-2 border-gray-200">
+            <div class="grid grid-cols-2 gap-2 text-xs">
+                <div class="flex justify-between">
+                    <span class="text-white">Suhu:</span>
+                    <span class="font-medium">${p.suhu || 'N/A'}°C</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-white">Kualitas Udara:</span>
+                    <span class="font-medium">${p.kualitas_udara || 'N/A'} ppm</span>
+                </div>
+                <div class="col-span-2 flex justify-between">
+                    <span class="text-white">Status:</span>
+                    <span class="${p.status_color || 'text-gray-500'} font-bold">${p.status_text || 'N/A'}</span>
+                </div>
+                <div class="col-span-2 flex justify-between">
+                    <span class="text-white">Status Darurat:</span>
+                    <span class="${p.status_darurat == 1 ? 'text-red-500' : 'text-green-500'} font-bold">${p.status_darurat == 1 ? 'Darurat' : 'Tidak Darurat'}</span>
+                </div>
+                <div class="col-span-2 text-xs text-gray-400 text-center mt-2">
+                    <span>⏰ ${now.toLocaleTimeString('id-ID')}</span>
+                </div>
+            </div>
+        </div>
+    `;
 
-                    // Add marker to map
-                    const marker = L.marker(petugasLatLng, { icon: petugasIcon })
-                        .addTo(map)
-                        .bindPopup(popupContent, {
-                            maxWidth: 250,
-                            className: 'custom-popup'
-                        });
-                    markers.push(marker);
+    // Add marker to map
+    const marker = L.marker(petugasLatLng, { icon: petugasIcon })
+        .addTo(map)
+        .bindPopup(popupContent, {
+            maxWidth: 250,
+            className: 'custom-popup'
+        });
+    markers.push(marker);
 
-                    // Line from command center to petugas
-                    const line = L.polyline([komandoLatLng, petugasLatLng], {
-                        color: '#fbbf24', // Tailwind yellow-400
-                        weight: 3,
-                        opacity: 0.8,
-                        dashArray: '5, 5',
-                    }).addTo(map);
+    // Line from command center to petugas
+    const line = L.polyline([komandoLatLng, petugasLatLng], {
+        color: '#fbbf24', // Tailwind yellow-400
+        weight: 3,
+        opacity: 0.8,
+        dashArray: '5, 5',
+    }).addTo(map);
 
-                    // Distance calculation and tooltip
-                    const distance = komandoLatLng.distanceTo(petugasLatLng);
-                    const midpointLat = (komandoLat + lat) / 2;
-                    const midpointLng = (komandoLng + lng) / 2;
+    // Distance calculation and tooltip
+    const distance = komandoLatLng.distanceTo(petugasLatLng);
+    const midpointLat = (komandoLat + lat) / 2;
+    const midpointLng = (komandoLng + lng) / 2;
 
-                    const tooltip = L.tooltip({
-                        permanent: true,
-                        direction: 'center',
-                        className: 'leaflet-tooltip-distance bg-yellow-100 border border-yellow-300 text-yellow-800 px-2 py-1 rounded shadow-sm',
-                        offset: [0, 0],
-                    })
-                        .setLatLng([midpointLat, midpointLng])
-                        .setContent(`${(distance / 1000).toFixed(2)} km`)
-                        .addTo(map);
+    const tooltip = L.tooltip({
+        permanent: true,
+        direction: 'center',
+        className: 'leaflet-tooltip-distance bg-yellow-100 border border-yellow-300 text-yellow-800 px-2 py-1 rounded shadow-sm',
+        offset: [0, 0],
+    })
+        .setLatLng([midpointLat, midpointLng])
+        .setContent(`${(distance / 1000).toFixed(2)} km`)
+        .addTo(map);
 
-                    lines.push(line);
-                    lines.push(tooltip);
-                });
+    lines.push(line);
+    lines.push(tooltip);
+});
 
                 updateStatusIndicator('updated', `${validatedData.length} petugas aktif - ${new Date().toLocaleTimeString('id-ID')}`);
             } else {

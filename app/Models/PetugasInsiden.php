@@ -23,7 +23,6 @@
         {
             return $this->belongsTo(Petugas::class, 'petugas_id', 'id');
         }
-
         public function perangkat()
         {
             return $this->belongsTo(Perangkat::class, 'perangkat_id', 'id');

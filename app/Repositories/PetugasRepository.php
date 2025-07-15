@@ -1,18 +1,20 @@
 <?php
 
 namespace App\Repositories;
+
 use App\Models\Petugas;
 use App\Traits\QueryHelper;
 use Illuminate\Support\Facades\Storage;
 
-class PetugasRepository extends Repository  {
+class PetugasRepository extends Repository
+{
     use QueryHelper;
 
 
-   
+
     public function __construct()
     {
-       parent::__construct();   
+        parent::__construct();
     }
 
     public function getPetugas($search, $perPage, $sortField = null, $sortDirection = null)
@@ -33,7 +35,7 @@ class PetugasRepository extends Repository  {
 
             $query->where(function ($q) use ($search, $searchableFields) {
                 // Build search conditions for main fields
-                $q->where(function($subQ) use ($search, $searchableFields) {
+                $q->where(function ($subQ) use ($search, $searchableFields) {
                     foreach ($searchableFields as $field) {
                         $subQ->orWhere($field, 'like', "%{$search}%");
                     }
@@ -48,7 +50,8 @@ class PetugasRepository extends Repository  {
     }
 
 
-    public function createPetugas($data){
+    public function createPetugas($data)
+    {
         // Simpan foto jika ada
         if (isset($data['foto']) && $data['foto'] instanceof \Illuminate\Http\UploadedFile) {
             $file = $data['foto'];
@@ -62,13 +65,12 @@ class PetugasRepository extends Repository  {
             'create',
             [
 
-            $petugas['nama'] => $petugas->nama,
+                $petugas['nama'] => $petugas->nama,
             ],
             'nama'
         );
         return $petugas;
     }
-
 
     public function updatePetugas($id, array $data)
     {
@@ -84,7 +86,7 @@ class PetugasRepository extends Repository  {
             'update',
             [
 
-            $petugas['nama'] => $petugas->nama,
+                $petugas['nama'] => $petugas->nama,
             ],
             'nama'
         );
@@ -104,7 +106,7 @@ class PetugasRepository extends Repository  {
             'delete',
             [
 
-            $petugas['nama'] => $petugas->nama,
+                $petugas['nama'] => $petugas->nama,
             ],
             'nama'
         );
@@ -132,29 +134,27 @@ class PetugasRepository extends Repository  {
 
 
     public function updateStatus($petugasId)
-{
-    $petugas = Petugas::find($petugasId);
-    if (is_null($petugas)) {
-        return false; // Mengembalikan false jika petugas tidak ditemukan
+    {
+        $petugas = Petugas::find($petugasId);
+        if (is_null($petugas)) {
+            return false; // Mengembalikan false jika petugas tidak ditemukan
+        }
+        // Toggle status antara 'Aktif' dan 'Tidak Aktif'
+        $petugas->status = $this->toggleStatus($petugas->status);
+        $this->logActivityService->logActivity(
+            $petugas,
+            'update status',
+            [
+
+                $petugas['status'] => $petugas->status,
+            ],
+            'nama'
+        );
+        $petugas->save();
+        return $petugas; // Mengembalikan objek Petugas setelah diperbarui
     }
-    // Toggle status antara 'Aktif' dan 'Tidak Aktif'
-    $petugas->status = $this->toggleStatus($petugas->status);
-    $this->logActivityService->logActivity(
-        $petugas,
-        'update status',
-        [
-
-        $petugas['status'] => $petugas->status,
-        ],
-        'nama'
-    );
-    $petugas->save();
-    return $petugas; // Mengembalikan objek Petugas setelah diperbarui
-}
-private function toggleStatus($currentStatus)
-{
-    return $currentStatus === 'Aktif' ? 'Tidak Aktif' : 'Aktif';
-
-}
-
+    private function toggleStatus($currentStatus)
+    {
+        return $currentStatus === 'Aktif' ? 'Tidak Aktif' : 'Aktif';
+    }
 }

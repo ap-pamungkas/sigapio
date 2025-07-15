@@ -104,6 +104,7 @@ class PetugasInsidenRepository extends Repository
                     'status_color' => $item->status === 'Tidak Aktif' ? 'text-danger' : 'text-success',
                     'latitude' => $latestLog->latitude,
                     'longitude' => $latestLog->longitude,
+                    'status_darurat' => $latestLog->darurat ?? '',
                 ];
             })
             ->filter() // 🧹 Hapus yang null

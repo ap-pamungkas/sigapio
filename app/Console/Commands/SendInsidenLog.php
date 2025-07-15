@@ -27,39 +27,42 @@ class SendInsidenLog extends Command
     public function handle()
     {
         $deviceSerials = ['SN-PRK-001', 'SN-PRK-002', 'SN-PRK-004'];
-        $url = 'http://sigapio.kayongdeveloper.tech/api/insiden-log';
+        // $url = 'http://sigapio.kayongdeveloper.tech/api/insiden-log';
+        $url = 'http://localhost/sigap-io_v_0.2/api/insiden-log';
 
         $this->info("Mulai mengirim log insiden setiap 5 detik. Tekan Ctrl + C untuk berhenti.\n");
 
         while (true) {
-            // Pilih no_seri secara acak
-            $noSeri = $deviceSerials[array_rand($deviceSerials)];
+            // Pilih no_seri secara acak untuk status darurat
+            $emergencySerial = $deviceSerials[array_rand($deviceSerials)];
 
-            // Data acak
-          $latitude = -1.8222 + mt_rand(-100, 100) / 10000;    // -1.8322 s/d -1.8122
-        $longitude = 110.5231 + mt_rand(-100, 100) / 10000;  // 110.5131 s/d 110.5331
-            $suhu = mt_rand(250, 350) / 10; // 25.0 - 35.0
-            $kualitasUdara = mt_rand(10, 150);
+            foreach ($deviceSerials as $noSeri) {
+                // Data acak
+                $latitude = -1.8222 + mt_rand(-100, 100) / 10000;    // -1.8322 s/d -1.8122
+                $longitude = 110.5231 + mt_rand(-100, 100) / 10000;  // 110.5131 s/d 110.5331
+                $suhu = mt_rand(250, 350) / 10; // 25.0 - 35.0
+                $kualitasUdara = mt_rand(10, 150);
 
-            $payload = [
-                'no_seri' => $noSeri,
-                'latitude' => $latitude,
-                'longitude' => $longitude,
-                'suhu' => $suhu,
-                'kualitas_udara' => $kualitasUdara,
-                'darurat' => false,
-            ];
+                $payload = [
+                    'no_seri' => $noSeri,
+                    'latitude' => $latitude,
+                    'longitude' => $longitude,
+                    'suhu' => $suhu,
+                    'kualitas_udara' => $kualitasUdara,
+                    'darurat' => $noSeri === $emergencySerial ? true : false,
+                ];
 
-            try {
-                $response = Http::post($url, $payload);
+                try {
+                    $response = Http::post($url, $payload);
 
-                if ($response->successful()) {
-                    $this->info(now() . ' - Log berhasil dikirim: ' . json_encode($payload));
-                } else {
-                    $this->error(now() . ' - Gagal kirim: ' . $response->status() . ' - ' . $response->body());
+                    if ($response->successful()) {
+                        $this->info(now() . ' - Log berhasil dikirim: ' . json_encode($payload));
+                    } else {
+                        $this->error(now() . ' - Gagal kirim: ' . $response->status() . ' - ' . $response->body());
+                    }
+                } catch (\Exception $e) {
+                    $this->error(now() . ' - Exception: ' . $e->getMessage());
                 }
-            } catch (\Exception $e) {
-                $this->error(now() . ' - Exception: ' . $e->getMessage());
             }
 
             sleep(2); // jeda antar kiriman
