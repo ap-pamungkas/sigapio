@@ -52,7 +52,7 @@
                                     </a>
                                     @else
                                         <a class="btn btn-primary btn-sm"
-                                        href="{{ route('admin.insiden.show', $insiden->id) }}">
+                                        href="{{ route('komando.insiden.show', $insiden->id) }}">
                                         <i class="bi bi-info-circle"></i>
                                     </a>
                                       <button class="btn btn-danger btn-sm" data-bs-toggle="modal"

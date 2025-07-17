@@ -2,11 +2,13 @@
 
 namespace App\Livewire\Admin;
 use App\Repositories\PetugasInsidenRepository;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 
 class InsidenShowController extends Component
 {
 
+    #[Title("Detail Insiden")]
     public $insiden;
     public $logData;
     protected $petugasInsidenRepository;

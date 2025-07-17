@@ -94,170 +94,262 @@
                 margin-right: 8px;
                 font-size: 16px;
             }
+
+            .toggle-btn {
+            cursor: pointer;
+            padding: 5px;
+            text-align: center;
+            font-size: 16px;
+        }
+        .layer-list {
+            display: none;
+            margin-top: 5px;
+        }
+        .layer-list.active {
+            display: block;
+        }
+        .layer-item {
+            padding: 5px;
+            cursor: pointer;
+        }
+        .layer-item.active {
+            font-weight: bold;
+            background-color: #f0f0f0;
+        }
+        .layer-item:hover {
+            background-color: #e0e0e0;
+        }
+        .icon {
+            margin-right: 5px;
+        }
+        .legend-control {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            font-family: Arial, sans-serif;
+        }
+        .legend h4 {
+            margin: 0 0 10px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .legend-section {
+            margin-bottom: 10px;
+        }
+        .legend-section h5 {
+            margin: 5px 0;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .color-box {
+            display: inline-block;
+            width: 20px;
+            height: 10px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
         </style>
     @endpush
 
-    @push('scripts')
-        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-        <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                var lat = {{ $insiden->latitude ?? 0 }};
-                var lng = {{ $insiden->longitude ?? 0 }};
+        
 
-                var map = L.map('map').setView([lat, lng], 15);
+@push('scripts')
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var lat = {{ $insiden->latitude ?? 0 }};
+            var lng = {{ $insiden->longitude ?? 0 }};
 
-                // Base layers
-                var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 18,
-                    attribution: '© OpenStreetMap contributors'
-                }).addTo(map);
+            var map = L.map('map').setView([lat, lng], 15);
 
-                var esriLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                    maxZoom: 18,
-                    attribution: '© Esri, Maxar, Earthstar Geographics'
-                });
+            // Base layers
+            var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 18,
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
 
-                // Heatmap suhu
-                var suhuHeat = [
-                    @foreach($logData as $log)
-                        [{{ $log->latitude }}, {{ $log->longitude }}, {{ $log->suhu / 50 }}],
-                    @endforeach
-                ];
-                var suhuLayer = L.heatLayer(suhuHeat, {
-                    radius: 25,
-                    blur: 15,
-                    maxZoom: 17,
-                    gradient: {
-                        0.2: 'blue',
-                        0.4: 'lime',
-                        0.6: 'orange',
-                        0.9: 'red'
-                    }
-                }).addTo(map);
-
-                // Heatmap kualitas udara
-                var udaraHeat = [
-                    @foreach($logData as $log)
-                        [{{ $log->latitude }}, {{ $log->longitude }}, {{ $log->kualitas_udara / 100 }}],
-                    @endforeach
-                ];
-                var udaraLayer = L.heatLayer(udaraHeat, {
-                    radius: 25,
-                    blur: 15,
-                    maxZoom: 17,
-                    gradient: {
-                        0.2: 'green',
-                        0.4: 'yellow',
-                        0.6: 'orange',
-                        0.9: 'black'
-                    }
-                }).addTo(map);
-
-                // Custom base layer control
-                let BaseLayerControl = L.Control.extend({
-                    options: { position: 'topright' },
-                    onAdd: function (map) {
-                        var container = L.DomUtil.create('div', 'leaflet-control-custom base-layer-control');
-                        container.innerHTML = `
-                            <div class="toggle-btn" id="baseToggle"><span class="icon">🗺️</span></div>
-                            <div class="layer-list" id="baseList">
-                                <div class="layer-item active" id="osmItem"><span class="icon">🗺️</span>OpenStreetMap</div>
-                                <div class="layer-item" id="esriItem"><span class="icon">🛰️</span>Satellite</div>
-                            </div>
-                        `;
-                        L.DomEvent.on(container, 'click', L.DomEvent.stopPropagation);
-                        return container;
-                    }
-                });
-
-                map.addControl(new BaseLayerControl());
-
-                // Custom overlay layer control
-                var OverlayLayerControl = L.Control.extend({
-                    options: { position: 'topright' },
-                    onAdd: function (map) {
-                        var container = L.DomUtil.create('div', 'leaflet-control-custom overlay-layer-control');
-                        container.innerHTML = `
-                            <div class="toggle-btn" id="overlayToggle"><span class="icon">📊</span></div>
-                            <div class="layer-list" id="overlayList">
-                                <div class="layer-item active" id="suhuItem"><span class="icon">🌡️</span>Suhu</div>
-                                <div class="layer-item active" id="udaraItem"><span class="icon">💨</span>Kualitas Udara</div>
-                            </div>
-                        `;
-                        L.DomEvent.on(container, 'click', L.DomEvent.stopPropagation);
-                        return container;
-                    }
-                });
-
-                map.addControl(new OverlayLayerControl());
-
-                // Base layer toggle logic
-                var currentBaseLayer = osmLayer;
-                var baseList = document.getElementById('baseList');
-                var baseToggle = document.getElementById('baseToggle');
-
-                baseToggle.addEventListener('click', function () {
-                    baseList.classList.toggle('active');
-                });
-
-                document.getElementById('osmItem').addEventListener('click', function () {
-                    if (currentBaseLayer !== osmLayer) {
-                        map.removeLayer(currentBaseLayer);
-                        map.addLayer(osmLayer);
-                        currentBaseLayer = osmLayer;
-                        document.getElementById('osmItem').classList.add('active');
-                        document.getElementById('esriItem').classList.remove('active');
-                    }
-                    baseList.classList.remove('active');
-                });
-
-                document.getElementById('esriItem').addEventListener('click', function () {
-                    if (currentBaseLayer !== esriLayer) {
-                        map.removeLayer(currentBaseLayer);
-                        map.addLayer(esriLayer);
-                        currentBaseLayer = esriLayer;
-                        document.getElementById('esriItem').classList.add('active');
-                        document.getElementById('osmItem').classList.remove('active');
-                    }
-                    baseList.classList.remove('active');
-                });
-
-                // Overlay layer toggle logic
-                var overlayList = document.getElementById('overlayList');
-                var overlayToggle = document.getElementById('overlayToggle');
-
-                overlayToggle.addEventListener('click', function () {
-                    overlayList.classList.toggle('active');
-                });
-
-                document.getElementById('suhuItem').addEventListener('click', function () {
-                    if (map.hasLayer(suhuLayer)) {
-                        map.removeLayer(suhuLayer);
-                        this.classList.remove('active');
-                    } else {
-                        map.addLayer(suhuLayer);
-                        this.classList.add('active');
-                    }
-                    overlayList.classList.remove('active');
-                });
-
-                document.getElementById('udaraItem').addEventListener('click', function () {
-                    if (map.hasLayer(udaraLayer)) {
-                        map.removeLayer(udaraLayer);
-                        this.classList.remove('active');
-                    } else {
-                        map.addLayer(udaraLayer);
-                        this.classList.add('active');
-                    }
-                    overlayList.classList.remove('active');
-                });
-
-                // Marker
-                L.marker([lat, lng]).addTo(map)
-                    .bindPopup("<b>{{ $insiden->nama_insiden }}</b><br>{{ $insiden->keterangan }}")
-                    .openPopup();
+            var esriLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                maxZoom: 18,
+                attribution: '© Esri, Maxar, Earthstar Geographics'
             });
-        </script>
-    @endpush
+
+            // Heatmap suhu
+            var suhuHeat = [
+                @foreach($logData as $log)
+                    [{{ $log->latitude }}, {{ $log->longitude }}, {{ $log->suhu / 50 }}],
+                @endforeach
+            ];
+            var suhuLayer = L.heatLayer(suhuHeat, {
+                radius: 25,
+                blur: 15,
+                maxZoom: 17,
+                gradient: {
+                    0.2: 'blue',
+                    0.4: 'lime',
+                    0.6: 'orange',
+                    0.9: 'red'
+                }
+            }).addTo(map);
+
+            // Heatmap kualitas udara
+            var udaraHeat = [
+                @foreach($logData as $log)
+                    [{{ $log->latitude }}, {{ $log->longitude }}, {{ $log->kualitas_udara / 100 }}],
+                @endforeach
+            ];
+            var udaraLayer = L.heatLayer(udaraHeat, {
+                radius: 25,
+                blur: 15,
+                maxZoom: 17,
+                gradient: {
+                    0.2: 'green',
+                    0.4: 'yellow',
+                    0.6: 'orange',
+                    0.9: 'black'
+                }
+            }).addTo(map);
+
+            // Custom base layer control
+            let BaseLayerControl = L.Control.extend({
+                options: { position: 'topright' },
+                onAdd: function (map) {
+                    var container = L.DomUtil.create('div', 'leaflet-control-custom base-layer-control');
+                    container.innerHTML = `
+                        <div class="toggle-btn" id="baseToggle"><span class="icon">🗺️</span></div>
+                        <div class="layer-list" id="baseList">
+                            <div class="layer-item active" id="osmItem"><span class="icon">🗺️</span>OpenStreetMap</div>
+                            <div class="layer-item" id="esriItem"><span class="icon">🛰️</span>Satellite</div>
+                        </div>
+                    `;
+                    L.DomEvent.on(container, 'click', L.DomEvent.stopPropagation);
+                    return container;
+                }
+            });
+
+            map.addControl(new BaseLayerControl());
+
+            // Custom overlay layer control
+            var OverlayLayerControl = L.Control.extend({
+                options: { position: 'topright' },
+                onAdd: function (map) {
+                    var container = L.DomUtil.create('div', 'leaflet-control-custom overlay-layer-control');
+                    container.innerHTML = `
+                        <div class="toggle-btn" id="overlayToggle"><span class="icon">📊</span></div>
+                        <div class="layer-list" id="overlayList">
+                            <div class="layer-item active" id="suhuItem"><span class="icon">🌡️</span>Suhu</div>
+                            <div class="layer-item active" id="udaraItem"><span class="icon">💨</span>Kualitas Udara</div>
+                        </div>
+                    `;
+                    L.DomEvent.on(container, 'click', L.DomEvent.stopPropagation);
+                    return container;
+                }
+            });
+
+            map.addControl(new OverlayLayerControl());
+
+            // Custom legend control
+            var LegendControl = L.Control.extend({
+                options: { position: 'bottomleft' },
+                onAdd: function (map) {
+                    var container = L.DomUtil.create('div', 'leaflet-control-custom legend-control');
+                    container.innerHTML = `
+                        <div class="legend">
+                            <h4>Legenda Heatmap</h4>
+                            <div class="legend-section">
+                                <h5>Suhu (°C)</h5>
+                                <div><span class="color-box" style="background-color: blue;"></span> ≤ 10°C</div>
+                                <div><span class="color-box" style="background-color: lime;"></span> 10°C - 20°C</div>
+                                <div><span class="color-box" style="background-color: orange;"></span> 20°C - 30°C</div>
+                                <div><span class="color-box" style="background-color: red;"></span> ≥ 45°C</div>
+                            </div>
+                            <div class="legend-section">
+                                <h5>Kualitas Udara</h5>
+                                <div><span class="color-box" style="background-color: green;"></span> ≤ 20 (Baik)</div>
+                                <div><span class="color-box" style="background-color: yellow;"></span> 20 - 40 (Sedang)</div>
+                                <div><span class="color-box" style="background-color: orange;"></span> 40 - 60 (Tidak Sehat)</div>
+                                <div><span class="color-box" style="background-color: black;"></span> ≥ 90 (Berbahaya)</div>
+                            </div>
+                        </div>
+                    `;
+                    L.DomEvent.on(container, 'click', L.DomEvent.stopPropagation);
+                    return container;
+                }
+            });
+
+            map.addControl(new LegendControl());
+
+            // Base layer toggle logic
+            var currentBaseLayer = osmLayer;
+            var baseList = document.getElementById('baseList');
+            var baseToggle = document.getElementById('baseToggle');
+
+            baseToggle.addEventListener('click', function () {
+                baseList.classList.toggle('active');
+            });
+
+            document.getElementById('osmItem').addEventListener('click', function () {
+                if (currentBaseLayer !== osmLayer) {
+                    map.removeLayer(currentBaseLayer);
+                    map.addLayer(osmLayer);
+                    currentBaseLayer = osmLayer;
+                    document.getElementById('osmItem').classList.add('active');
+                    document.getElementById('esriItem').classList.remove('active');
+                }
+                baseList.classList.remove('active');
+            });
+
+            document.getElementById('esriItem').addEventListener('click', function () {
+                if (currentBaseLayer !== esriLayer) {
+                    map.removeLayer(currentBaseLayer);
+                    map.addLayer(esriLayer);
+                    currentBaseLayer = esriLayer;
+                    document.getElementById('esriItem').classList.add('active');
+                    document.getElementById('osmItem').classList.remove('active');
+                }
+                baseList.classList.remove('active');
+            });
+
+            // Overlay layer toggle logic
+            var overlayList = document.getElementById('overlayList');
+            var overlayToggle = document.getElementById('overlayToggle');
+
+            overlayToggle.addEventListener('click', function () {
+                overlayList.classList.toggle('active');
+            });
+
+            document.getElementById('suhuItem').addEventListener('click', function () {
+                if (map.hasLayer(suhuLayer)) {
+                    map.removeLayer(suhuLayer);
+                    this.classList.remove('active');
+                } else {
+                    map.addLayer(suhuLayer);
+                    this.classList.add('active');
+                }
+                overlayList.classList.remove('active');
+            });
+
+            document.getElementById('udaraItem').addEventListener('click', function () {
+                if (map.hasLayer(udaraLayer)) {
+                    map.removeLayer(udaraLayer);
+                    this.classList.remove('active');
+                } else {
+                    map.addLayer(udaraLayer);
+                    this.classList.add('active');
+                }
+                overlayList.classList.remove('active');
+            });
+
+            // Marker
+            L.marker([lat, lng]).addTo(map)
+                .bindPopup("<b>{{ $insiden->nama_insiden }}</b><br>{{ $insiden->keterangan }}")
+                .openPopup();
+        });
+    </script>
+@endpush
+
+
+
+
 </div>

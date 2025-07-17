@@ -132,8 +132,8 @@
                 console.log('Initializing map...');
 
                 // Safely get coordinates with fallback
-                const latitude = {{ $latitude ?? -0.0263 }};
-                const longitude = {{ $longitude ?? 109.3425 }};
+                const latitude = {{ $latitude  }};
+                const longitude = {{ $longitude  }};
 
             map = L.map('map').setView([latitude, longitude], 18);
 
@@ -142,8 +142,8 @@
                     attribution: '© OpenStreetMap, © CartoDB'
                 }).addTo(map);
 
-                // Add command center marker
-                const pontianakIcon = L.icon({
+              
+                const komandoZone = L.icon({
                     iconUrl: '{{ url('public/komando/icon/zona.svg') }}',
                     iconSize: [46, 46],
                     iconAnchor: [16, 32],
@@ -151,7 +151,7 @@
                 });
 
                 L.marker([latitude, longitude], {
-                        icon: pontianakIcon
+                        icon: komandoZone
                     })
                     .addTo(map)
                     .bindPopup("Pusat komando");
@@ -220,8 +220,8 @@
             lines = [];
 
             // Safely get coordinates with fallback
-            const komandoLat = {{ $latitude ?? -0.0263 }};
-            const komandoLng = {{ $longitude ?? 109.3425 }};
+            const komandoLat = {{ $latitude  }};
+            const komandoLng = {{ $longitude  }};
             const komandoLatLng = L.latLng(komandoLat, komandoLng);
 
             if (validatedData.length > 0) {
@@ -319,7 +319,7 @@
 
     // Line from command center to petugas
     const line = L.polyline([komandoLatLng, petugasLatLng], {
-        color: '#fbbf24', // Tailwind yellow-400
+        color: '#fbbf24', 
         weight: 3,
         opacity: 0.8,
         dashArray: '5, 5',

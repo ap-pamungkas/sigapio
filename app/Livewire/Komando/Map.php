@@ -17,9 +17,7 @@ class Map extends Component
     public $longitude;
     public $petugasInsidenData = [];
     public $lastUpdated;
-
     protected PetugasInsidenRepository $petugasInsidenRepository;
-
     public function boot(PetugasInsidenRepository $petugasInsidenRepository)
     {
         $this->petugasInsidenRepository = $petugasInsidenRepository;
@@ -35,12 +33,11 @@ class Map extends Component
             $this->longitude = $this->insiden->longitude;
             $this->loadPetugasInsidenData();
         } else {
-            // Fallback lokasi default jika tidak ada insiden aktif
-            $this->latitude = -0.0263;   // Pontianak coordinates
-            $this->longitude = 109.3425;
+            // defaul value 
+            $this->latitude = -1.8304873 ; 
+            $this->longitude = 109.9762115;
             $this->petugasInsidenData = [];
         }
-        
         $this->lastUpdated = now()->timestamp;
     }
 

@@ -265,8 +265,8 @@
         <div class="container hero-content">
             <div class="row align-items-center">
                 <div class="col-lg-6">
-                    <h1 class="display-4 fw-bold mb-4">Sistem Telemetri Keselamatan dan Pemantauan Petugas Pemadam Kebakaran Hutan</h1>
-                    <p class="lead mb-4">Sistem terintegrasi berbasis IoT untuk pemantauan real-time petugas pemadam kebakaran hutan di Kabupaten Ketapang, memastikan keselamatan dan respons cepat terhadap insiden kebakaran.</p>
+                    <h1 class="display-4 fw-bold mb-4">Sistem Telemetri Keselamatan dan Pemantauan Petugas Pemadam Kebakaran Hutan Kabupaten Ketapang Berbasis IoT</h1>
+                    <p class="lead mb-4">Sistem berbasis IoT dan LoRa untuk memantau kondisi lingkungan dan lokasi petugas secara real-time, meningkatkan keselamatan dan efisiensi penanganan kebakaran hutan di Ketapang.</p>
                     <div class="d-flex gap-3">
                         <a href="#fitur" class="btn btn-primary btn-lg">Pelajari Lebih Lanjut</a>
                     </div>
@@ -289,7 +289,7 @@
                             <i class="fas fa-map-marked-alt"></i>
                         </div>
                         <h3>Pemantauan Real-time</h3>
-                        <p>Lacak lokasi petugas, suhu, kualitas udara, dan status darurat secara real-time melalui peta interaktif di Kabupaten Ketapang.</p>
+                        <p>Lacak lokasi petugas dengan GPS Neo-6M, suhu dan tekanan dengan BMP280, serta kualitas udara dengan MQ-135 melalui peta interaktif di Kabupaten Ketapang.</p>
                     </div>
                 </div>
                 <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
@@ -298,7 +298,7 @@
                             <i class="fas fa-bell"></i>
                         </div>
                         <h3>Peringatan Darurat</h3>
-                        <p>Sensor IoT mendeteksi kondisi darurat seperti suhu tinggi atau kualitas udara buruk, memberikan peringatan cepat kepada petugas.</p>
+                        <p>Tombol darurat dan buzzer diaktifkan saat kondisi berbahaya terdeteksi, dengan data dikirim via LoRa ke pusat komando untuk respons cepat.</p>
                     </div>
                 </div>
                 <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
@@ -307,7 +307,7 @@
                             <i class="fas fa-users"></i>
                         </div>
                         <h3>Koordinasi Petugas</h3>
-                        <p>Kelola petugas pemadam kebakaran dengan efisien, termasuk pelacakan lokasi dan penugasan di lapangan.</p>
+                        <p>Pusat komando memantau lokasi dan status petugas secara real-time untuk mengelola insiden kebakaran dengan efisien.</p>
                     </div>
                 </div>
             </div>
@@ -323,28 +323,28 @@
                     <div class="how-it-works-step">
                         <div class="step-number">1</div>
                         <h4>Deteksi Kondisi</h4>
-                        <p>Sensor IoT memantau suhu, kualitas udara, dan lokasi petugas untuk mendeteksi potensi kebakaran hutan.</p>
+                        <p>Sensor BMP280, MQ-135, dan GPS Neo-6M memantau suhu, tekanan, kualitas udara, dan lokasi petugas untuk mendeteksi potensi bahaya.</p>
                     </div>
                 </div>
                 <div class="col-md-3" data-aos="zoom-in" data-aos-delay="200">
                     <div class="how-it-works-step">
                         <div class="step-number">2</div>
                         <h4>Notifikasi Darurat</h4>
-                        <p>Sistem mengirimkan peringatan instan ke pusat komando dan petugas terdekat di Kabupaten Ketapang.</p>
+                        <p>Data dikirim melalui LoRa ke pusat komando, dengan peringatan instan jika tombol darurat ditekan atau kondisi berbahaya terdeteksi.</p>
                     </div>
                 </div>
                 <div class="col-md-3" data-aos="zoom-in" data-aos-delay="300">
                     <div class="how-it-works-step">
                         <div class="step-number">3</div>
                         <h4>Pemantauan Petugas</h4>
-                        <p>Data lokasi dan kondisi lingkungan petugas dikirim secara real-time untuk koordinasi yang optimal.</p>
+                        <p>Dashboard web berbasis Laravel dan Leaflet.js menampilkan data real-time untuk koordinasi optimal di Kabupaten Ketapang.</p>
                     </div>
                 </div>
                 <div class="col-md-3" data-aos="zoom-in" data-aos-delay="400">
                     <div class="how-it-works-step">
                         <div class="step-number">4</div>
                         <h4>Analisis Data</h4>
-                        <p>Data dianalisis untuk meningkatkan strategi pencegahan dan respons kebakaran di masa depan.</p>
+                        <p>Data telemetri digunakan untuk evaluasi dan pengambilan keputusan guna meningkatkan strategi penanganan kebakaran.</p>
                     </div>
                 </div>
             </div>
@@ -364,7 +364,7 @@
                             </div>
                             <div>
                                 <h4>Respons Cepat</h4>
-                                <p>Minimalkan waktu respons terhadap kebakaran hutan di Kabupaten Ketapang dengan telemetri real-time.</p>
+                                <p>Minimalkan waktu respons terhadap kebakaran hutan di Ketapang dengan pemantauan real-time.</p>
                             </div>
                         </div>
                     </div>
@@ -377,7 +377,7 @@
                             </div>
                             <div>
                                 <h4>Keselamatan Petugas</h4>
-                                <p>Pantau kondisi petugas untuk memastikan keselamatan mereka di lapangan.</p>
+                                <p>Pantau kondisi lingkungan dan lokasi petugas untuk memastikan keselamatan mereka di lapangan.</p>
                             </div>
                         </div>
                         <div class="d-flex">
@@ -386,7 +386,7 @@
                             </div>
                             <div>
                                 <h4>Data Strategis</h4>
-                                <p>Gunakan data telemetri untuk perencanaan pencegahan kebakaran yang lebih efektif.</p>
+                                <p>Gunakan data untuk evaluasi, pengambilan keputusan, dan perencanaan pencegahan kebakaran yang lebih baik.</p>
                             </div>
                         </div>
                     </div>
@@ -409,7 +409,7 @@
                             </div>
                             <div>
                                 <h5>Alamat</h5>
-                                <p>Jl. Ahmad Yani, Ketapang, Kalimantan Barat, Indonesia</p>
+                                <p>Politeknik Negeri Ketapang, Jl. Ahmad Yani, Ketapang, Kalimantan Barat, Indonesia</p>
                             </div>
                         </div>
                         <div class="d-flex mb-3">
@@ -471,7 +471,7 @@
             <div class="row">
                 <div class="col-lg-4 mb-4 mb-lg-0">
                     <h3 class="mb-4"><i class="fas fa-fire me-2"></i>Telemetri Ketapang</h3>
-                    <p>Sistem Telemetri Keselamatan dan Pemantauan Petugas Pemadam Kebakaran Hutan Kabupaten Ketapang Berbasis IoT untuk respons cepat dan perlindungan lingkungan.</p>
+                    <p>Sistem Telemetri Keselamatan dan Pemantauan Petugas Pemadam Kebakaran Hutan Kabupaten Ketapang Berbasis IoT untuk keselamatan petugas dan penanganan kebakaran yang efektif.</p>
                     <div class="social-icons mt-3">
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>

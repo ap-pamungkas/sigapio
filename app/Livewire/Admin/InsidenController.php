@@ -18,7 +18,6 @@ class InsidenController extends Component
     public  $selectedId;
     public $search = '';
     public $perPage = 10;
-    // public $sortField, $sortDirection ;
     public $sortField = 'id';
     public $sortDirection = 'asc';
     public $paginationTheme = 'bootstrap';
