@@ -24,8 +24,8 @@ class LogInsiden extends Model
         return $this->belongsTo(Insiden::class, 'insiden_id', 'id');
     }
 
-    public function petugasInsiden()
-    {
-        return $this->belongsTo(PetugasInsiden::class,'petugas_insiden_id', 'id');
-    }
+        public function petugasInsiden()
+        {
+            return $this->belongsTo(PetugasInsiden::class,'petugas_insiden_id', 'id');
+        }
 }

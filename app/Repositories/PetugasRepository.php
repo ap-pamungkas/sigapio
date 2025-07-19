@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Petugas;
 use App\Traits\QueryHelper;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class PetugasRepository extends Repository
@@ -50,48 +51,83 @@ class PetugasRepository extends Repository
     }
 
 
-    public function createPetugas($data)
-    {
-        // Simpan foto jika ada
-        if (isset($data['foto']) && $data['foto'] instanceof \Illuminate\Http\UploadedFile) {
-            $file = $data['foto'];
-            // Simpan foto dan dapatkan path lengkap
-            $data['foto'] = $file->store('foto_petugas', 'public');
+
+
+public function createPetugas($data)
+{
+    if (isset($data['foto']) && $data['foto'] instanceof \Illuminate\Http\UploadedFile) {
+        $file = $data['foto'];
+        if ($file->isValid()) {
+            // Bersihkan nama file
+            $fileName = time() . '_' . preg_replace('/[^A-Za-z0-9\-\_\.]/', '', $file->getClientOriginalName());
+            $destinationPath = public_path('foto_petugas');
+            $fullPath = $destinationPath . '/' . $fileName;
+
+            // Cegah konflik nama file
+            if (file_exists($fullPath)) {
+                $fileName = time() . '_' . uniqid() . '_' . preg_replace('/[^A-Za-z0-9\-\_\.]/', '', $file->getClientOriginalName());
+            }
+
+            // Buat folder jika belum ada
+            if (!file_exists($destinationPath)) {
+                Log::info('Membuat folder: ' . $destinationPath);
+                mkdir($destinationPath, 0755, true);
+            }
+
+          
+
+            try {
+                // Gunakan storeAs sebagai alternatif
+                $file->storeAs('foto_petugas', $fileName, 'local');
+                $data['foto'] = 'foto_petugas/' . $fileName;
+            } catch (\Exception $e) {
+              
+                throw new \Exception('Gagal menyimpan file: ' . $e->getMessage());
+            }
+        } else {
+           
+            throw new \Exception('File tidak valid atau gagal diunggah.');
         }
-
-        $petugas = Petugas::create($data);
-        $this->logActivityService->logActivity(
-            $petugas,
-            'create',
-            [
-
-                $petugas['nama'] => $petugas->nama,
-            ],
-            'nama'
-        );
-        return $petugas;
     }
 
-    public function updatePetugas($id, array $data)
-    {
-        $petugas = Petugas::findOrFail($id);
-        if (array_key_exists('foto', $data)) {
-            $this->handlePetugasFotoUpdate($petugas, $data['foto']);
-        }
-        // Hapus key 'foto' dari data untuk mencegah overwrite jika tidak ada perubahan
-        unset($data['foto']);
-        $petugas->update($data);
-        $this->logActivityService->logActivity(
-            $petugas,
-            'update',
-            [
+    $petugas = Petugas::create($data);
+    $this->logActivityService->logActivity(
+        $petugas,
+        'create',
+        [
+            'nama' => $petugas->nama,
+        ],
+        'nama'
+    );
+    return $petugas;
+}
 
-                $petugas['nama'] => $petugas->nama,
-            ],
-            'nama'
-        );
-        return $petugas;
+ public function updatePetugas($id, array $data)
+{
+    $petugas = Petugas::findOrFail($id);
+
+    // Tangani foto jika ada
+    if (array_key_exists('foto', $data)) {
+        $this->handlePetugasFotoUpdate($petugas, $data['foto']);
+        unset($data['foto']); // Mencegah overwrite field foto secara langsung
     }
+
+    // Update data lainnya
+    $petugas->update($data);
+
+    // Logging
+    $this->logActivityService->logActivity(
+        $petugas,
+        'update',
+        [
+            'nama' => $petugas->nama,
+        ],
+        'nama'
+    );
+
+    return $petugas;
+}
+
 
 
 
@@ -113,23 +149,43 @@ class PetugasRepository extends Repository
         return $petugas->delete();
     }
 
-    private function handlePetugasFotoUpdate($petugas, $foto)
-    {
-        $disk = Storage::disk('public');
-        // Hapus foto lama jika ada
-        if ($petugas->foto && $disk->exists($petugas->foto)) {
-            $disk->delete($petugas->foto);
-        }
-        if ($foto instanceof \Illuminate\Http\UploadedFile) {
-            // Simpan foto baru
-            $path = $foto->store('petugas', 'public');
-            $petugas->foto = $path;
-        } elseif (is_null($foto)) {
-            // Set foto menjadi null jika dihapus
-            $petugas->foto = null;
-        }
-        $petugas->save();
+private function handlePetugasFotoUpdate($petugas, $foto)
+{
+    $folder = 'foto_petugas';
+    $disk = Storage::disk('local'); // storage/app/
+
+    // Ambil path file lama dari DB
+    $foto_lama = $petugas->foto;
+
+    // Hapus foto lama (jika ada)
+    if ($foto_lama && $disk->exists($foto_lama)) {
+        $disk->delete($foto_lama);
     }
+
+    // Upload foto baru
+    if ($foto instanceof \Illuminate\Http\UploadedFile) {
+        if ($foto->isValid()) {
+            $ext = $foto->getClientOriginalExtension();
+            $filename = time() . '_' . uniqid() . '.' . $ext;
+            $path = $folder . '/' . $filename;
+
+            // Simpan file ke storage/app/foto_petugas
+            $disk->putFileAs($folder, $foto, $filename);
+
+            // Simpan path relatif
+            $petugas->foto = $path;
+        } else {
+            throw new \Exception('File foto tidak valid.');
+        }
+    } elseif (is_null($foto)) {
+        $petugas->foto = null;
+    }
+
+    $petugas->save();
+}
+
+
+
 
 
 
