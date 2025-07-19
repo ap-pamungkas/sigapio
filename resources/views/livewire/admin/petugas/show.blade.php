@@ -14,7 +14,7 @@
                 <div class="row mb-3">
                     <div class="col-md-4 text-center">
                         @if ($petugas->foto)
-                            <img src="{{ asset('public/storage/' . $petugas->foto) }}" class="img-fluid rounded mb-2"
+                            <img src="{{ asset('public/' . $petugas->foto) }}" class="img-fluid rounded mb-2"
                                 style="max-height: 250px;" alt="Foto Petugas">
                         @else
                             <img src="{{ asset('komando/assets/img/user/petugas.jpg') }}" class="img-fluid rounded mb-2"

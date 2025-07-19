@@ -105,7 +105,7 @@
 
             @if ($petugas_id)
                 <div class="mt-2">
-                    <span>Foto Lama: <a href="{{ url('public/storage/' .$foto) }}" target="_blank">Lihat</a></span>
+                    <span>Foto Lama: <a href="{{ url('public/' .$foto) }}" target="_blank">Lihat</a></span>
                 </div>
 
             @endif

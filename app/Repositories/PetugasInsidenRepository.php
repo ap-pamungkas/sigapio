@@ -56,18 +56,25 @@ class PetugasInsidenRepository extends Repository
             ->where('insiden_id', $insiden_id)
             ->get();
 
+
+            
         return $petugasInsidenList->map(function ($item) use ($withCoordinates) {
             $latestLog = $item->insidenLog->first(); // Sudah eager loaded
-
+                $status = "Aktif";
+                if($latestLog->created_at && $latestLog->created_at->diffInSeconds(now()) > 10){
+                    $status = "Tidak Aktif";
+                }
+                
             $data = [
                 'nama_petugas' => $item->petugas->nama ?? 'Tidak Diketahui',
                 'foto' => $item->petugas->foto ?? null,
                 'no_seri' => $item->perangkat->no_seri ?? 'Tidak Diketahui',
                 'suhu' => $latestLog ? ($withCoordinates ? $latestLog->suhu : $latestLog->suhu . '°C') : '-',
                 'kualitas_udara' => $latestLog ? ($withCoordinates ? $latestLog->kualitas_udara : $latestLog->kualitas_udara . ' ppm') : '-',
-                'status' => $item->status ?? 'Aktif',
-                'status_text' => $item->status ?? 'Aktif',
-                'status_color' => $item->status === 'Tidak Aktif' ? 'text-danger' : 'text-success',
+                'status' => $status,                
+                'status_text' => $status,
+                'status_color' => $status === 'Tidak Aktif' ? 'text-danger' : 'text-success',
+               
             ];
 
             if ($withCoordinates) {
@@ -93,15 +100,20 @@ class PetugasInsidenRepository extends Repository
                     return null; // akan difilter di bawah
                 }
 
+                $status = "Aktif";
+                if($latestLog->created_at && $latestLog->created_at->diffInSeconds(now()) > 10){
+                    $status = "Tidak Aktif";
+                }
+                
                 return [
                     'nama_petugas' => $item->petugas->nama ?? 'Tidak Diketahui',
                     'foto' => $item->petugas->foto ?? null,
                     'no_seri' => $item->perangkat->no_seri ?? 'Tidak Diketahui',
                     'suhu' => $latestLog->suhu ?? '-',
                     'kualitas_udara' => $latestLog->kualitas_udara ?? '-',
-                    'status' => $item->status ?? 'Aktif',
-                    'status_text' => $item->status ?? 'Aktif',
-                    'status_color' => $item->status === 'Tidak Aktif' ? 'text-danger' : 'text-success',
+                    'status' => $status,
+                    'status_text' => $status,
+                    'status_color' => $status === 'Tidak Aktif' ? 'text-danger' : 'text-success',
                     'latitude' => $latestLog->latitude,
                     'longitude' => $latestLog->longitude,
                     'status_darurat' => $latestLog->darurat ?? '',
